@@ -61,21 +61,33 @@ function asesor_updated_messages($messages) {
 
 
 /* Update interna Help
-add_action('contextual_help', 'asesor_help_text', 10, 3);
-    function asesor_help_text($contextual_help, $screen_id, $screen) {
-    if ('asesor' == $screen->id) {
-        $contextual_help =
-        '<p>' . __('Cosas para recordar a la hora de agregar una noticia interna:') . '</p>' .
-        '<ul>' .
-        '<li>' . __('Darle un título a la noticia. El título sea usado como cabecera') . '</li>' .
-        '<li>' . __('Agregar una imagen destacada.') . '</li>' .
-        '<li>' . __('Agregar texto. El texto aparecerá en cada noticia.') . '</li>' .
-        '</ul>';
+add_action('current_screen', 'asesor_help_text');
+    function asesor_help_text($screen) {
+    if ('agent' == $screen->id) {
+        $screen->add_help_tab(
+            array(
+                'id'      => 'agent_help',
+                'title'   => __('Ayuda Agentes', 'tnb'),
+                'content' =>
+                    '<p>' . __('Cosas para recordar a la hora de agregar un asesor inmobiliario:') . '</p>' .
+                    '<ul>' .
+                    '<li>' . __('Darle un título al agente. El título será usado como cabecera') . '</li>' .
+                    '<li>' . __('Agregar una imagen destacada.') . '</li>' .
+                    '<li>' . __('Agregar texto. El texto aparecerá en cada perfil de agente.') . '</li>' .
+                    '</ul>',
+            )
+        );
     }
-    elseif ('edit-asesor' == $screen->id) {
-        $contextual_help = '<p>' . __('Una lista de todos los internas aparece debajo. para editar un interna haga click en el título.') . '</p>';
+    elseif ('edit-agent' == $screen->id) {
+        $screen->add_help_tab(
+            array(
+                'id'      => 'agent_edit_help',
+                'title'   => __('Ayuda Editar', 'tnb'),
+                'content' =>
+                    '<p>' . __('Una lista de todos los agentes aparece debajo. para editar un agente haga click en el título.') . '</p>',
+            )
+        );
     }
-    return $contextual_help;
 }
 */
 

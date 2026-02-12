@@ -35,7 +35,10 @@ function propiedad_init() {
         'menu_icon'          => 'dashicons-admin-multisite',
         'supports'           => array('title', 'editor', 'thumbnail'),
         'show_in_rest'       => true,
-        'taxonomies'         => array('tipo', 'operacion', 'location', 'status')
+        // Fixed: Removed 'tipo' and 'operacion' from taxonomies array
+        // These are now handled by CMB2 fields in 'Detalles de la operación' metabox
+        // Only keep taxonomies that should appear in the sidebar
+        'taxonomies'         => array('location', 'status')
     );
     register_post_type('propiedad', $args);
 }
@@ -61,18 +64,39 @@ function propiedades_updated_messages($messages) {
     return $messages;
 }
 
-/* Update galeria Help
-add_action('contextual_help', 'propiedades_help_text', 10, 3);
-    function propiedades_help_text($contextual_help, $screen_id, $screen) {
+/* Update galeria Help - deprecated contextual_help, using get_current_screen() instead
+add_action('current_screen', 'propiedades_help_text');
+    function propiedades_help_text($screen) {
     if ('propiedades' == $screen->id) {
-        $contextual_help =
-        '<p>' . __('Cosas para recordar a la hora de agregar un galería:') . '</p>' .
-        '<ul>' .
-        '<li>' . __('Darle un título al galería. El título sea usado como cabecera del galería') . '</li>' .
-        '<li>' . __('Agregar una imagen destacada para darle el fondo al galería.') . '</li>' .
-        '<li>' . __('Agregar texto. El texto aparecerá en cada galeria durante la transición.') . '</li>' .
-        '</ul>';
+        $screen->add_help_tab(
+            array(
+                'id'      => 'propiedades_help',
+                'title'   => __('Ayuda Propiedades', 'tnb'),
+                'content' =>
+                    '<p>' . __('Cosas para recordar a la hora de agregar una propiedad:') . '</p>' .
+                    '<ul>' .
+                    '<li>' . __('El campo Tipo es obligatorio y debe seleccionarse siempre', 'tnb') . '</li>' .
+                    '<li>' . __('La Operación (Venta/Alquiler) también es requerida', 'tnb') . '</li>' .
+                    '<li>' . __('Complete todos los campos importantes para mejor visibilidad', 'tnb') . '</li>' .
+                    '</ul>',
+            )
+        );
     }
+    elseif ('edit-propiedades' == $screen->id) {
+        $screen->add_help_tab(
+            array(
+                'id'      => 'propiedades_edit_help',
+                'title'   => __('Ayuda Editar', 'tnb'),
+                'content' =>
+                    '<p>' . __('Cosas para recordar a la hora de editar una propiedad:') . '</p>' .
+                    '<ul>' .
+                    '<li>' . __('Mantenga actualizada la información del Tipo y Operación', 'tnb') . '</li>' .
+                    '<li>' . __('Verifique que todas las coordenadas del mapa sean correctas', 'tnb') . '</li>' .
+                    '</ul>',
+            )
+        );
+    }
+}
     elseif ('edit-propiedades' == $screen->id) {
         $contextual_help = '<p>' . __('Una lista de todos los galerias aparece debajo. para editar un galeria haga click en el título.') . '</p>';
     }
@@ -116,7 +140,13 @@ function create_propiedad_taxonomies() {
         'show_in_quick_edit'    => true,
         //'update_count_callback' => '_update_post_term_count',
         'query_var'             => true,
-        'rewrite'               => array( 'slug' => 'tipo' ),
+        'rewrite'               => array( 'slug' => 'propiedad-tipo' ),
+        // Default terms for common property types
+        'default_terms' => array(
+            0 => 'casa',
+            1 => 'departamento',
+            2 => 'terreno',
+        ),
     );
 
     register_taxonomy( 'tipo', 'propiedad', $args );
@@ -149,9 +179,26 @@ function create_propiedad_taxonomies() {
         'show_ui'               => true,
         'show_admin_column'     => true,
         'show_in_nav_menus'     => true,
+        'show_in_quick_edit'    => true,
         //'update_count_callback' => '_update_post_term_count',
         'query_var'             => true,
-        'rewrite'               => array( 'slug' => 'operacion' ),
+        'rewrite'               => array( 'slug' => 'propiedad-operacion' ),
+        // Default terms for common operations
+        'default_terms' => array(
+            0 => 'venta',
+            1 => 'alquiler',
+        ),
+    );
+
+    $args = array(
+        'hierarchical'          => false,
+        'labels'                => $labels,
+        'show_ui'               => true,
+        'show_admin_column'     => true,
+        'show_in_nav_menus'     => true,
+        //'update_count_callback' => '_update_post_term_count',
+        'query_var'             => true,
+        'rewrite'               => array( 'slug' => 'propiedad-operacion' ),
     );
 
     register_taxonomy( 'operacion', 'propiedad', $args );
@@ -227,9 +274,29 @@ function create_propiedad_taxonomies() {
         'query_var'             => true,
         'rewrite'               => array( 'slug' => 'status' ),
         'description'           => __('Definimos estados como "en construccion", "apta credito", "en sucesion", etc.'),
+        // Default terms for common property statuses
+        'default_term' => array(
+            'name' => 'A estrenar',
+            'slug' => 'a-estrenar',
+            'description' => 'Propiedad nueva lista para estrenar'
+        ),
     );
 
     register_taxonomy( 'status', 'propiedad', $args );
+    
+    // Insert additional default terms if they don't exist
+    if (!term_exists('en-construccion', 'status')) {
+        wp_insert_term('En construcción', 'status', array(
+            'slug' => 'en-construccion',
+            'description' => 'Propiedad en proceso de construcción'
+        ));
+    }
+    if (!term_exists('renovada', 'status')) {
+        wp_insert_term('Renovada', 'status', array(
+            'slug' => 'renovada',
+            'description' => 'Propiedad recientemente renovada'
+        ));
+    }
 
 
     // Prestaciones (Patio, Baño, Etc)
@@ -334,11 +401,11 @@ function create_propiedad_taxonomies() {
         'show_in_nav_menus'     => true,
         //'update_count_callback' => '_update_post_term_count',
         'query_var'             => true,
-        'rewrite'               => array( 'slug' => 'tag' ),
+        'rewrite'               => array( 'slug' => 'propiedad-tag' ),
         'description'           => __('Definimos estados como "en construccion", "apta credito", "en sucesion", etc.'),
     );
 
-    register_taxonomy( 'tag', 'propiedad', $args );
+    register_taxonomy( 'propiedad_tag', 'propiedad', $args );
 }
 
 

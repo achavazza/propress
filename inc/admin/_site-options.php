@@ -14,15 +14,15 @@ function add_settings_page() {
 add_action( 'admin_init', 'theme_site_options_init' );
 add_action( 'admin_menu', 'add_settings_page' );
 
-function ilc_admin_tabs( $current = 'homepage' ) { 
-    $tabs = array( 'homepage' => 'Home', 'contacto' => 'Contacto'); 
+function ilc_admin_tabs( $current = 'homepage' ) {
+    $tabs = array( 'homepage' => 'Home', 'contacto' => 'Contacto');
     $links = array();
     echo '<div id="icon-themes" class="icon32"><br></div>';
     echo '<h2 class="nav-tab-wrapper">';
     foreach( $tabs as $tab => $name ){
         $class = ( $tab == $current ) ? ' nav-tab-active' : '';
         echo "<a class='nav-tab$class' href='?page=settings&tab=$tab'>$name</a>";
-        
+
     }
     echo '</h2>';
 }
@@ -30,7 +30,7 @@ function ilc_admin_tabs( $current = 'homepage' ) {
 
 //start settings page
 function theme_site_options_page() {
-        if ( ! isset( $_REQUEST['updated'] )) $_REQUEST['updated'] = false; 
+        if ( ! isset( $_REQUEST['updated'] )) $_REQUEST['updated'] = false;
     ?>
     <div class="wrap">
         <h2><?php _e( 'Opciones del sitio' ) //your admin panel title ?></h2>
@@ -44,17 +44,17 @@ function theme_site_options_page() {
 
         <form method="post" action="options.php">
 
-            <?php 
+            <?php
                 settings_fields('site_options');
-                $options = get_option( 'site_options' ); 
+                $options = get_option( 'site_options' );
             ?>
 
-            <?php 
+            <?php
             //defaults
             if(!$options['projects-on-home'] || $options['projects-on-home'] == 0){
                 $options['projects-on-home'] = 12;
             }
-            
+
             if(!$options['email']){
                 $admin_email = get_option( 'admin_email' );
                 $options['email'] = $admin_email;
@@ -62,10 +62,10 @@ function theme_site_options_page() {
 
             ?>
 
-            <?php 
-            if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab']; 
+            <?php
+            if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab'];
                 else $tab = 'homepage';
-                ?> 
+                ?>
             <table class="form-table">
             <?php
             switch ( $tab ){
@@ -101,7 +101,7 @@ function theme_site_options_page() {
                                 <input class="regular-text" id="site_options[mail-home]" type="text" size="36" name="site_options[mail-home]" value="<?php echo esc_attr_e( $options['mail-home'] ); ?>" />
                             </td>
                         </tr>
-                        <?php /* 
+                        <?php /*
                         <tr valign="top">
                             <th scope="row">
                                 <label for="site_options[blank-boxes]">
@@ -180,7 +180,7 @@ function theme_site_options_page() {
                                 <input class="regular-text" id="site_options[twitter]" type="text" size="36" name="site_options[twitter]" value="<?php echo esc_url( $options['twitter'] ); ?>" /><br />
                             </td>
                         </tr>
-                        <?php /* 
+                        <?php /*
                         <tr class="form-field">
                             <th scope="row"><label for="site_options[phone]"><?php _e( 'Perfil de facebook' ); ?></label></th>
                             <td>
@@ -197,7 +197,7 @@ function theme_site_options_page() {
                         </tr>
                         */ ?>
             <?php break;
-            } ?>    
+            } ?>
             </table>
             <hr />
             <p><input class="button button-primary" name="submit" id="submit" value="Guardar cambios" type="submit"></p>

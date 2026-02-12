@@ -58,18 +58,35 @@ function gallery_updated_messages($messages) {
     return $messages;
 }
 
-/* Update galeria Help */
-add_action('contextual_help', 'gallery_help_text', 10, 3);
-    function gallery_help_text($contextual_help, $screen_id, $screen) {
+/* Update galeria Help - deprecated contextual_help, using get_current_screen() instead */
+add_action('current_screen', 'gallery_help_text');
+    function gallery_help_text($screen) {
     if ('gallery' == $screen->id) {
-        $contextual_help =
-        '<p>' . __('Cosas para recordar a la hora de agregar un galería:') . '</p>' .
-        '<ul>' .
-        '<li>' . __('Darle un título al galería. El título sea usado como cabecera del galería') . '</li>' .
-        '<li>' . __('Agregar una imagen destacada para darle el fondo al galería.') . '</li>' .
-        '<li>' . __('Agregar texto. El texto aparecerá en cada galeria durante la transición.') . '</li>' .
-        '</ul>';
+        $screen->add_help_tab(
+            array(
+                'id'      => 'gallery_help',
+                'title'   => __('Ayuda Galerías', 'tnb'),
+                'content' =>
+                    '<p>' . __('Cosas para recordar a la hora de agregar un galería:') . '</p>' .
+                    '<ul>' .
+                    '<li>' . __('Darle un título al galería. El título será usado como cabecera del galería') . '</li>' .
+                    '<li>' . __('Agregar una imagen destacada para darle el fondo al galería.') . '</li>' .
+                    '<li>' . __('Agregar texto. El texto aparecerá en cada galería durante la transición.') . '</li>' .
+                    '</ul>',
+            )
+        );
     }
+    elseif ('edit-gallery' == $screen->id) {
+        $screen->add_help_tab(
+            array(
+                'id'      => 'gallery_edit_help',
+                'title'   => __('Ayuda Editar', 'tnb'),
+                'content' =>
+                    '<p>' . __('Una lista de todos los galerías aparece debajo. para editar un galería haga click en el título.') . '</p>',
+            )
+        );
+    }
+}
     elseif ('edit-gallery' == $screen->id) {
         $contextual_help = '<p>' . __('Una lista de todos los galerias aparece debajo. para editar un galeria haga click en el título.') . '</p>';
     }

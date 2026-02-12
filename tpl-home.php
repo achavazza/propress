@@ -20,7 +20,7 @@ if($img){
 <?php include('inc/slider.php'); ?>
 <div class="search-panel block">
 	<div class="container">
-		<?php echo get_search_form(); ?>
+		<?php tnb_get_search_form(); ?>
 	</div>
 </div>
 
@@ -154,7 +154,7 @@ if ( $loop->have_posts() ) :
 
         <div class="columns is-mobile is-centered">
             <div class="column is-one-third">
-                <a href="<?php echo get_bloginfo('home').'/?s=' ?>" class="button is-primary is-medium is-fullwidth">
+                <a href="<?php echo home_url().'/?s=' ?>" class="button is-primary is-medium is-fullwidth">
                     <?php echo _e('Ver Todas las propiedades') ?>
                 </a>
             </div>

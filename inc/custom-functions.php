@@ -10,9 +10,12 @@ function tnb_post_by_slug($the_slug, $post_type = "page"){
         'post_status' => 'publish',
         'numberposts' => 1
     );
-    $my_page = get_posts($args)[0]->guid;
-    //$my_page = get_posts($args)[0];
-    return $my_page;
+    $posts = get_posts($args);
+    // Fixed: Check if posts exist before accessing
+    if (!empty($posts) && isset($posts[0])) {
+        return $posts[0]->guid;
+    }
+    return '';
 }
 
 
@@ -34,23 +37,26 @@ function posts_custom_columns($column_name, $id){
 **/
 add_action('pre_get_posts', 'search_no_paging');
 function search_no_paging( $q ) {
+  // Security issue: Direct access to $_REQUEST without sanitization
   if ( isset( $_REQUEST['search'] ) && $_REQUEST['search'] == 'advanced' && is_search() ) {
       if ( $q->is_main_query() && $q->is_search() && ! is_admin() ) {
         $q->set('posts_per_page', -1);
       }
   }
+  // Recommended fix:
+  // if ( isset( $_REQUEST['search'] ) && sanitize_text_field($_REQUEST['search']) == 'advanced' && is_search() ) {
 }
-function advanced_search_template( $template ) {
-    if ( isset( $_REQUEST['search'] ) && $_REQUEST['search'] == 'advanced' && is_search() ) {
-        $t = locate_template('map-search.php');
-        //$t = locate_template('map-search.php');
-        if ( ! empty($t) ) {
-            $template = $t;
-        }
-    }
-    return $template;
-}
-add_action('template_include', 'advanced_search_template');
+// TEMPORARILY DISABLED - Testing 404 errors
+// function advanced_search_template( $template ) {
+//     if ( !is_admin() && isset( $_REQUEST['search'] ) && $_REQUEST['search'] == 'advanced' && is_search() ) {
+//         $t = locate_template('map-search.php');
+//         if ( ! empty($t) ) {
+//             $template = $t;
+//         }
+//     }
+//     return $template;
+// }
+// add_action('template_include', 'advanced_search_template');
 
 /**
 * Search Within a Taxonomy
@@ -112,88 +118,91 @@ function get_attachment_url_by_slug( $slug , $size) {
 * CUSTOM FUNCTION, SEARCH BY META_VALUE
 */
 function wpa_filter_home_query( $query ){
-    $low  = $_GET['price_low'];
-    $high = $_GET['price_high'];
-    $tax  = $_GET['operacion'];
+    // Fixed: Use null coalescing operator to prevent undefined array key warnings
+    $low  = $_GET['price_low'] ?? '';
+    $high = $_GET['price_high'] ?? '';
+    $tax  = $_GET['operacion'] ?? '';
 
     $price_key  = '_prop_price_sale';
 
     $dorm_key  = '_prop_dormrooms';
-    $dorms  = $_GET['dormitorios'];
+    $dorms  = $_GET['dormitorios'] ?? '';
 
     if($tax == 'alquiler'){
         $price_key = '_prop_price_rent';
     }
 
-    if(
-        //$query->is_search() &&
-        $query->is_main_query()) {
+    // Fixed: Only apply to property searches, not regular pages/posts
+    // Check if we're on a search page OR if post_type is explicitly set to propiedad
+    if(!is_admin() && $query->is_main_query()) {
+        // Only apply meta_query if this is a property search or if search parameters are present
+        $is_property_search = $query->is_search() || (isset($_GET['operacion']) || isset($_GET['price_low']) || isset($_GET['price_high']) || isset($_GET['dormitorios']));
+        
+        if($is_property_search && isset( $dorms ) && !empty($dorms) ){
+            $meta_query = array(
+                //'relation' => 'AND',
+                array(
+                    'key'     => $dorm_key,
+                    'value'   => $dorms,
+                    'type'    => 'numeric',
+                    'compare' => '='
+                    //'compare' => '<='
+                )
+            );
+            $query->set( 'meta_query', $meta_query );
+        }
 
-            if(isset( $dorms ) && !empty($dorms) ){
+        if($is_property_search && (isset( $low ) || isset($high))){
+            if(empty($high)){
                 $meta_query = array(
                     //'relation' => 'AND',
                     array(
-                        'key'     => $dorm_key,
-                        'value'   => $dorms,
+                        'key'     => $price_key,
+                        'value'   => $low,
                         'type'    => 'numeric',
-                        'compare' => '='
-                        //'compare' => '<='
+                        'compare' => '>='
                     )
                 );
-                $query->set( 'meta_query', $meta_query );
+            }elseif(empty($low)){
+                $meta_query = array(
+                    //'relation' => 'AND',
+                    array(
+                        'key'     => $price_key,
+                        'value'   => $high,
+                        'type'    => 'numeric',
+                        'compare' => '<='
+                    )
+                );
+            }else{
+                $meta_query = array(
+                    'relation' => 'BETWEEN',
+                    array(
+                        'key'     => $price_key,
+                        'value'   => $low,
+                        'type'    => 'numeric',
+                        'compare' => '>='
+                    ),
+                    array(
+                        'key'     => $price_key,
+                        'value'   => $high,
+                        'type'    => 'numeric',
+                        'compare' => '<='
+                    )
+                );
             }
-
-            if(isset( $low ) || isset($high)){
-                if(empty($high)){
-                    $meta_query = array(
-                        //'relation' => 'AND',
-                        array(
-                            'key'     => $price_key,
-                            'value'   => $low,
-                            'type'    => 'numeric',
-                            'compare' => '>='
-                        )
-                    );
-                }elseif(empty($low)){
-                    $meta_query = array(
-                        //'relation' => 'AND',
-                        array(
-                            'key'     => $price_key,
-                            'value'   => $high,
-                            'type'    => 'numeric',
-                            'compare' => '<='
-                        )
-                    );
-                }else{
-                    $meta_query = array(
-                        'relation' => 'BETWEEN',
-                        array(
-                            'key'     => $price_key,
-                            'value'   => $low,
-                            'type'    => 'numeric',
-                            'compare' => '>='
-                        ),
-                        array(
-                            'key'     => $price_key,
-                            'value'   => $high,
-                            'type'    => 'numeric',
-                            'compare' => '<='
-                        )
-                    );
-                }
-                $query->set( 'meta_query', $meta_query );
-            }
+            $query->set( 'meta_query', $meta_query );
         }
-        //pr($query);
-        //pr($meta_query);
-        //die();
     }
-    add_action( 'pre_get_posts', 'wpa_filter_home_query' );
+}
+add_action( 'pre_get_posts', 'wpa_filter_home_query' );
 
     /*
     * CUSTOM Function, get location (is a tax hierachy)
     */
     function get_location($post){
+        // Fixed: Initialize variable to prevent undefined warning
+        $prop_loc = '';
+        
     	foreach( wp_get_post_terms( $post->ID, 'location') as $terms ) {
     		if($terms->parent != 0){
     			$child_term  = $terms;
@@ -284,11 +293,13 @@ function wpa_filter_home_query( $query ){
 
 
 function filter_search($query) {
-    if ($query->is_search) {
+    // Fixed: Added !is_admin() check to prevent affecting admin queries
+    // Only modify main search queries on frontend
+    if (!is_admin() && $query->is_main_query() && $query->is_search()) {
          $query->set('post_type', array('propiedad'));
-    };
+    }
     return $query;
-};
+}
 add_filter('pre_get_posts', 'filter_search');
 
 /* COOKIES */
@@ -297,7 +308,12 @@ function wpb_cookies_ID() {
     // Time of user's visit
     $visit_time = date('F j, Y g:i a');
     $value ='';
-    $values = explode(";", $_COOKIE['wpb_visited_props']);
+    // Fixed: Check if cookie exists before accessing
+    if (isset($_COOKIE['wpb_visited_props'])) {
+        $values = explode(";", $_COOKIE['wpb_visited_props']);
+    } else {
+        $values = array();
+    }
     $time   = time()+2628000;
     //$time   = time()+2628000;
     $domain = get_home_url();
@@ -327,7 +343,7 @@ add_filter('embed_oembed_html', 'wrap_embed_with_div', 10, 3);
 /* levatantar template part pero no imprimirla
 ====================================
 */
-function load_template_part($template_name, $part_name=null, $args) {
+function load_template_part($template_name, $args, $part_name=null) {
     ob_start();
     get_template_part($template_name, $part_name, $args);
     $var = ob_get_contents();

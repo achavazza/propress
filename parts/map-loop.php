@@ -3,15 +3,16 @@ $prop_img        = get_the_post_thumbnail_url(null, 'thumbnail');
 $default         = get_attachment_url_by_slug('default', 'thumbnail');
 $thumb           = empty($prop_img) ? $default : $prop_img;
 
-$prop_address    = $args['_prop_address'][0];
-$prop_extra      = $args['_prop_extra'][0];
+// Fixed: Check if array keys exist before accessing
+$prop_address    = isset($args['_prop_address'][0]) ? $args['_prop_address'][0] : '';
+$prop_extra      = isset($args['_prop_extra'][0]) ? $args['_prop_extra'][0] : '';
 
-$prop_rooms      = ($args['_prop_rooms'][0] != 0) ? $args['_prop_rooms'][0] : '' ;
-$prop_sup        = ($args['_prop_sup'][0] != 0) ? $args['_prop_sup'][0] : '';
-$prop_dormrooms  = ($args['_prop_dormrooms'][0] != 0) ? $args['_prop_dormrooms'][0] : '';
-$prop_bathrooms  = ($args['_prop_bathrooms'][0] != 0) ? $args['_prop_bathrooms'][0] : '';
-$prop_garage     = ($args['_prop_garage'][0] != 0) ? $args['_prop_garage'][0] : '';
-$prop_time       = ($args['_prop_time'][0] != 0) ? $args['_prop_time'][0] : '';
+$prop_rooms      = (isset($args['_prop_rooms'][0]) && $args['_prop_rooms'][0] != 0) ? $args['_prop_rooms'][0] : '';
+$prop_sup        = (isset($args['_prop_sup'][0]) && $args['_prop_sup'][0] != 0) ? $args['_prop_sup'][0] : '';
+$prop_dormrooms  = (isset($args['_prop_dormrooms'][0]) && $args['_prop_dormrooms'][0] != 0) ? $args['_prop_dormrooms'][0] : '';
+$prop_bathrooms  = (isset($args['_prop_bathrooms'][0]) && $args['_prop_bathrooms'][0] != 0) ? $args['_prop_bathrooms'][0] : '';
+$prop_garage     = (isset($args['_prop_garage'][0]) && $args['_prop_garage'][0] != 0) ? $args['_prop_garage'][0] : '';
+$prop_time       = (isset($args['_prop_time'][0]) && $args['_prop_time'][0] != 0) ? $args['_prop_time'][0] : '';
 
 //ahora estan parts/price-block.php
 //$prop_sale       = ($args['_prop_price_sale'][0]!= '0,00') ? $args['_prop_price_sale'][0] : '';
@@ -61,7 +62,7 @@ $prop_loc        = get_location($post);
                         ?>
                         <li class="level-item">
                             <span class="icon-text">
-                                <span class="icon material-icons icon-small" title="<?php echo sprintf(ngettext("%d Dormitorio", "%d Dormitorios", $dorms), $dorms); ?>">
+                                <span class="icon material-icons icon-small" title="<?php echo ($dorms == 1) ? "$dorms Dormitorio" : "$dorms Dormitorios"; ?>">
                                     hotel
                                 </span>
                                 <span><?php echo sprintf("%d", $dorms); ?></span>
@@ -74,7 +75,7 @@ $prop_loc        = get_location($post);
                         ?>
                         <li class="level-item">
                             <span class="icon-text">
-                                <span class="icon material-icons icon-small" title="<?php echo sprintf(ngettext("%d Baño", "%d Baños", $baths), $baths);?>">
+                                <span class="icon material-icons icon-small" title="<?php echo ($baths == 1) ? "$baths Baño" : "$baths Baños";?>">
                                     bathtub
                                 </span>
                                 <span><?= sprintf("%d", $baths);?></span>
@@ -169,7 +170,7 @@ $prop_loc        = get_location($post);
     <?php /*
     <?php if(isset($type)): ?>
         <div class="media-right">
-            <a class="prop-icon-type" href="<?= isset($type) ? get_term_link($type) : get_bloginfo('home').'/?s='; ?>" title="<?php echo __('Tipo de propiedad') ?>">
+            <a class="prop-icon-type" href="<?= isset($type) ? get_term_link($type) : home_url().'/?s='; ?>" title="<?php echo __('Tipo de propiedad') ?>">
                 <span class="material-icons md-36" <?= isset($type) ? $type->name : __('Propiedad', 'tnb'); ?>>business</span>
                 <span>
                     <?= $type->name  ?>

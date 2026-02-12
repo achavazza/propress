@@ -91,7 +91,7 @@ $statuses        = get_the_terms($post->ID, 'status')[0];
                             </div>
                             <?php if(isset($type)): ?>
                                 <div class="media-right">
-                                    <a class="prop-icon-type" href="<?= isset($type) ? get_term_link($type) : get_bloginfo('home').'/?s='; ?>" title="<?php echo __('Tipo de propiedad') ?>">
+                                    <a class="prop-icon-type" href="<?= isset($type) ? get_term_link($type) : home_url().'/?s='; ?>" title="<?php echo __('Tipo de propiedad') ?>">
                                         <span class="material-icons md-36" <?= isset($type) ? $type->name : __('Propiedad', 'tnb'); ?>>business</span>
                                         <span>
                                             <?= $type->name  ?>
@@ -111,7 +111,7 @@ $statuses        = get_the_terms($post->ID, 'status')[0];
                                         ?>
                                         <li class="level-item">
                                             <span class="icon-text">
-                                                <span class="icon material-icons icon-small" title="<?php echo sprintf(ngettext("%d Dormitorio", "%d Dormitorios", $dorms), $dorms); ?>">
+                                                <span class="icon material-icons icon-small" title="<?php echo ($dorms == 1) ? "$dorms Dormitorio" : "$dorms Dormitorios"; ?>">
                                                     hotel
                                                 </span>
                                                 <span><?php echo sprintf("%d", $dorms); ?></span>
@@ -124,7 +124,7 @@ $statuses        = get_the_terms($post->ID, 'status')[0];
                                         ?>
                                         <li class="level-item">
                                             <span class="icon-text">
-                                                <span class="icon material-icons icon-small" title="<?php echo sprintf(ngettext("%d Baño", "%d Baños", $baths), $baths);?>">
+                                                <span class="icon material-icons icon-small" title="<?php echo ($baths == 1) ? "$baths Baño" : "$baths Baños";?>">
                                                     bathtub
                                                 </span>
                                                 <span><?= sprintf("%d", $baths);?></span>
@@ -139,7 +139,7 @@ $statuses        = get_the_terms($post->ID, 'status')[0];
                             $dorms = intval($prop_dormrooms);
                             ?>
                             <li class="icon-text">
-                            <span class="icon material-icons icon-small" title="<?php echo sprintf(ngettext("%d Dormitorio", "%d Dormitorios", $dorms), $dorms); ?>">
+                            <span class="icon material-icons icon-small" title="<?php echo ($dorms == 1) ? "$dorms Dormitorio" : "$dorms Dormitorios"; ?>">
                             hotel
                             </span>
                             <span><?php echo sprintf("%d", $dorms); ?></span>
@@ -150,7 +150,7 @@ $statuses        = get_the_terms($post->ID, 'status')[0];
                             $baths = intval($prop_bathrooms);
                             ?>
                             <li class="icon-text">
-                            <span class="icon material-icons icon-small" title="<?php echo sprintf(ngettext("%d Baño", "%d Baños", $baths), $baths);?>">
+                            <span class="icon material-icons icon-small" title="<?php echo ($baths == 1) ? "$baths Baño" : "$baths Baños";?>">
                             bathtub
                             </span>
                             <span><?= sprintf("%d", $baths);?></span>

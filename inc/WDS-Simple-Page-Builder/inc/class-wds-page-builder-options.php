@@ -356,7 +356,7 @@ class WDS_Page_Builder_Options {
 		$stack = spb_get_template_stack();
 
 		// if in admin refresh glob transient
-		if ( is_admin() ) { 
+		if ( is_admin() ) {
 			delete_transient( 'spb_part_glob' );
 		}
 

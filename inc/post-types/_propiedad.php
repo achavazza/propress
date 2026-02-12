@@ -34,7 +34,10 @@ function propiedad_init() {
         'menu_position'      => 6,
         'menu_icon'          => 'dashicons-admin-multisite',
         'supports'           => array('title', 'editor', 'thumbnail'),
-        'taxonomies'         => array('tipo', 'operacion', 'location')
+        // Fixed: Removed 'tipo' and 'operacion' from taxonomies array
+        // These are now handled by CMB2 fields in 'Detalles de la operación' metabox
+        // Only keep taxonomies that should appear in the sidebar
+        'taxonomies'         => array('location')
     );
     register_post_type('propiedad', $args);
 }
@@ -60,22 +63,38 @@ function propiedades_updated_messages($messages) {
     return $messages;
 }
 
-/* Update galeria Help
-add_action('contextual_help', 'propiedades_help_text', 10, 3);
-    function propiedades_help_text($contextual_help, $screen_id, $screen) {
+/* Update galeria Help - deprecated contextual_help, using get_current_screen() instead
+add_action('current_screen', 'propiedades_help_text');
+    function propiedades_help_text($screen) {
     if ('propiedades' == $screen->id) {
-        $contextual_help =
-        '<p>' . __('Cosas para recordar a la hora de agregar un galería:') . '</p>' .
-        '<ul>' .
-        '<li>' . __('Darle un título al galería. El título sea usado como cabecera del galería') . '</li>' .
-        '<li>' . __('Agregar una imagen destacada para darle el fondo al galería.') . '</li>' .
-        '<li>' . __('Agregar texto. El texto aparecerá en cada galeria durante la transición.') . '</li>' .
-        '</ul>';
+        $screen->add_help_tab(
+            array(
+                'id'      => 'propiedades_help',
+                'title'   => __('Ayuda Propiedades', 'tnb'),
+                'content' =>
+                    '<p>' . __('Cosas para recordar a la hora de agregar una propiedad:') . '</p>' .
+                    '<ul>' .
+                    '<li>' . __('El campo Tipo es obligatorio y debe seleccionarse siempre', 'tnb') . '</li>' .
+                    '<li>' . __('La Operación (Venta/Alquiler) también es requerida', 'tnb') . '</li>' .
+                    '<li>' . __('Complete todos los campos importantes para mejor visibilidad', 'tnb') . '</li>' .
+                    '</ul>',
+            )
+        );
     }
     elseif ('edit-propiedades' == $screen->id) {
-        $contextual_help = '<p>' . __('Una lista de todos los galerias aparece debajo. para editar un galeria haga click en el título.') . '</p>';
+        $screen->add_help_tab(
+            array(
+                'id'      => 'propiedades_edit_help',
+                'title'   => __('Ayuda Editar', 'tnb'),
+                'content' =>
+                    '<p>' . __('Cosas para recordar a la hora de editar una propiedad:') . '</p>' .
+                    '<ul>' .
+                    '<li>' . __('Mantenga actualizada la información del Tipo y Operación', 'tnb') . '</li>' .
+                    '<li>' . __('Verifique que todas las coordenadas del mapa sean correctas', 'tnb') . '</li>' .
+                    '</ul>',
+            )
+        );
     }
-    return $contextual_help;
 }
 */
 

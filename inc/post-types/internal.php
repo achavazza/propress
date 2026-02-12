@@ -58,21 +58,33 @@ function internal_updated_messages($messages) {
     return $messages;
 }
 
-/* Update interna Help */
-add_action('contextual_help', 'internal_help_text', 10, 3);
-    function internal_help_text($contextual_help, $screen_id, $screen) {
+/* Update interna Help - deprecated contextual_help, using get_current_screen() instead */
+add_action('current_screen', 'internal_help_text');
+    function internal_help_text($screen) {
     if ('internal' == $screen->id) {
-        $contextual_help =
-        '<p>' . __('Cosas para recordar a la hora de agregar una noticia interna:') . '</p>' .
-        '<ul>' .
-        '<li>' . __('Darle un título a la noticia. El título sea usado como cabecera') . '</li>' .
-        '<li>' . __('Agregar una imagen destacada.') . '</li>' .
-        '<li>' . __('Agregar texto. El texto aparecerá en cada noticia.') . '</li>' .
-        '</ul>';
+        $screen->add_help_tab(
+            array(
+                'id'      => 'internal_help',
+                'title'   => __('Ayuda Noticias Internas', 'tnb'),
+                'content' =>
+                    '<p>' . __('Cosas para recordar a la hora de agregar una noticia interna:') . '</p>' .
+                    '<ul>' .
+                    '<li>' . __('Darle un título a la noticia. El título será usado como cabecera') . '</li>' .
+                    '<li>' . __('Agregar una imagen destacada.') . '</li>' .
+                    '<li>' . __('Agregar texto. El texto aparecerá en cada noticia.') . '</li>' .
+                    '</ul>',
+            )
+        );
     }
     elseif ('edit-internal' == $screen->id) {
-        $contextual_help = '<p>' . __('Una lista de todos los internas aparece debajo. para editar un interna haga click en el título.') . '</p>';
+        $screen->add_help_tab(
+            array(
+                'id'      => 'internal_edit_help',
+                'title'   => __('Ayuda Editar', 'tnb'),
+                'content' =>
+                    '<p>' . __('Una lista de todos los internas aparece debajo. para editar un interna haga click en el título.') . '</p>',
+            )
+        );
     }
-    return $contextual_help;
 }
 ?>

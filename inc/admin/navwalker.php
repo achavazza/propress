@@ -27,7 +27,10 @@
 
             $liClasses = 'navbar-item '.$item->title;
 
-            $hasChildren = $args->walker->has_children;
+            // Fixed: Check if args is object and has walker property
+            $hasChildren = (is_object($args) && isset($args->walker) && isset($args->walker->has_children))
+                ? $args->walker->has_children
+                : false;
             $liClasses .= $hasChildren? " has-dropdown is-hoverable": "";
 
             if($hasChildren){

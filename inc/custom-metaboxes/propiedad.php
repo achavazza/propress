@@ -34,7 +34,8 @@ function propiedad_init() {
         'menu_position'      => 8,
         'menu_icon'          => 'dashicons-admin-multisite',
         'supports'           => array('title', 'editor', 'thumbnail'),
-        'taxonomies'         => array('tipo', 'operacion', 'location', 'status')
+        // Fixed: Added 'prestaciones' to taxonomies array so it works like Servicios
+        'taxonomies'         => array('tipo', 'operacion', 'location', 'status', 'prestaciones')
     );
     register_post_type('propiedad', $args);
 }
@@ -60,18 +61,39 @@ function propiedades_updated_messages($messages) {
     return $messages;
 }
 
-/* Update galeria Help
-add_action('contextual_help', 'propiedades_help_text', 10, 3);
-    function propiedades_help_text($contextual_help, $screen_id, $screen) {
+/* Update galeria Help - deprecated contextual_help, using get_current_screen() instead
+add_action('current_screen', 'propiedades_help_text');
+    function propiedades_help_text($screen) {
     if ('propiedades' == $screen->id) {
-        $contextual_help =
-        '<p>' . __('Cosas para recordar a la hora de agregar un galería:') . '</p>' .
-        '<ul>' .
-        '<li>' . __('Darle un título al galería. El título sea usado como cabecera del galería') . '</li>' .
-        '<li>' . __('Agregar una imagen destacada para darle el fondo al galería.') . '</li>' .
-        '<li>' . __('Agregar texto. El texto aparecerá en cada galeria durante la transición.') . '</li>' .
-        '</ul>';
+        $screen->add_help_tab(
+            array(
+                'id'      => 'propiedades_help',
+                'title'   => __('Ayuda Propiedades', 'tnb'),
+                'content' =>
+                    '<p>' . __('Cosas para recordar a la hora de agregar una propiedad:') . '</p>' .
+                    '<ul>' .
+                    '<li>' . __('El campo Tipo es obligatorio y debe seleccionarse siempre', 'tnb') . '</li>' .
+                    '<li>' . __('La Operación (Venta/Alquiler) también es requerida', 'tnb') . '</li>' .
+                    '<li>' . __('Complete todos los campos importantes para mejor visibilidad', 'tnb') . '</li>' .
+                    '</ul>',
+            )
+        );
     }
+    elseif ('edit-propiedades' == $screen->id) {
+        $screen->add_help_tab(
+            array(
+                'id'      => 'propiedades_edit_help',
+                'title'   => __('Ayuda Editar', 'tnb'),
+                'content' =>
+                    '<p>' . __('Cosas para recordar a la hora de editar una propiedad:') . '</p>' .
+                    '<ul>' .
+                    '<li>' . __('Mantenga actualizada la información del Tipo y Operación', 'tnb') . '</li>' .
+                    '<li>' . __('Verifique que todas las coordenadas del mapa sean correctas', 'tnb') . '</li>' .
+                    '</ul>',
+            )
+        );
+    }
+}
     elseif ('edit-propiedades' == $screen->id) {
         $contextual_help = '<p>' . __('Una lista de todos los galerias aparece debajo. para editar un galeria haga click en el título.') . '</p>';
     }
@@ -115,7 +137,7 @@ function create_propiedad_taxonomies() {
         'show_in_quick_edit'    => true,
         //'update_count_callback' => '_update_post_term_count',
         'query_var'             => true,
-        'rewrite'               => array( 'slug' => 'tipo' ),
+        'rewrite'               => array( 'slug' => 'propiedad-tipo' ),
     );
 
     register_taxonomy( 'tipo', 'propiedad', $args );
@@ -150,7 +172,7 @@ function create_propiedad_taxonomies() {
         'show_in_nav_menus'     => true,
         //'update_count_callback' => '_update_post_term_count',
         'query_var'             => true,
-        'rewrite'               => array( 'slug' => 'operacion' ),
+        'rewrite'               => array( 'slug' => 'propiedad-operacion' ),
     );
 
     register_taxonomy( 'operacion', 'propiedad', $args );
@@ -333,7 +355,7 @@ function create_propiedad_taxonomies() {
         'show_in_nav_menus'     => true,
         //'update_count_callback' => '_update_post_term_count',
         'query_var'             => true,
-        'rewrite'               => array( 'slug' => 'tag' ),
+        'rewrite'               => array( 'slug' => 'propiedad-tag' ),
         'description'           => __('Definimos estados como "en construccion", "apta credito", "en sucesion", etc.'),
     );
 
@@ -373,23 +395,32 @@ function cmb2_prop_base() {
     ) );
 
     $cmb->add_field( array(
-        'name'     => 'Elija el tipo de propiedad',
-        'desc'     => 'Casa, Depto, Cabaña, etc.',
+        'name'     => 'Tipo de Propiedad *',
+        'desc'     => 'Casa, Depto, Cabaña, etc. (Campo obligatorio)',
         'id'       => $prefix .'tipo',
         'taxonomy' => 'tipo',
-        'type'     => 'taxonomy_select',
+        'required' => true, // Campo obligatorio
         // Optional:
         'options' => array(
             'no_terms_text' => __('Lo sentimos, no encontramos un tipo de propiedad, agregue una') // Change default text. Default: "No terms"
         ),
+        // Default values for common property types
+        'default' => array(
+            0 => 'casa', // Casa por defecto
+        ),
     ) );
     $cmb->add_field( array(
-        'name'     => 'Elija el tipo de operación',
-        'desc'     => 'Venta, Alquiler, inversión, etc.',
+        'name'     => 'Operación *',
+        'desc'     => 'Venta, Alquiler, etc. (Campo obligatorio)',
         'id'       => $prefix .'operacion',
         'taxonomy' => 'operacion',
         'select_all_button' => false,
         'type'     => 'taxonomy_multicheck',
+        'required' => true, // Campo obligatorio
+        // Default values for common operations
+        'default' => array(
+            0 => 'venta', // Venta por defecto
+        ),
         // Optional:
         'options' => array(
             'no_terms_text' => __('Lo sentimos, no encontramos un tipo de operación, agregue una') // Change default text. Default: "No terms"
@@ -450,6 +481,55 @@ function cmb2_prop_base() {
 }
 
 add_action( 'cmb2_init', 'cmb2_prop_base' );
+
+/**
+ * Hide default taxonomy metaboxes from sidebar using CSS and JavaScript
+ * Since Tipo and Operacion are now handled by CMB2 fields in 'Detalles de la operación' metabox
+ */
+function hide_propiedad_taxonomy_metaboxes() {
+    // Only on propiedad edit screen
+    $screen = get_current_screen();
+    if ($screen && $screen->post_type === 'propiedad') {
+        // CSS approach - hides immediately
+        echo '<style>
+            /* Hide Tipo taxonomy metabox */
+            #tagsdiv-tipo,
+            #tipodiv,
+            .postbox#tagsdiv-tipo {
+                display: none !important;
+                visibility: hidden !important;
+            }
+            
+            /* Hide Operacion taxonomy metabox */
+            #tagsdiv-operacion,
+            #operaciondiv,
+            .postbox#tagsdiv-operacion {
+                display: none !important;
+                visibility: hidden !important;
+            }
+        </style>';
+        
+        // JavaScript approach - ensures they stay hidden even after AJAX
+        echo '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Hide Tipo metabox
+                var tipoBox = document.getElementById("tagsdiv-tipo");
+                if (tipoBox) {
+                    tipoBox.style.display = "none";
+                    tipoBox.style.visibility = "hidden";
+                }
+                
+                // Hide Operacion metabox
+                var operacionBox = document.getElementById("tagsdiv-operacion");
+                if (operacionBox) {
+                    operacionBox.style.display = "none";
+                    operacionBox.style.visibility = "hidden";
+                }
+            });
+        </script>';
+    }
+}
+add_action('admin_head', 'hide_propiedad_taxonomy_metaboxes', 100);
 
 function cmb2_prop_taxes(){
 

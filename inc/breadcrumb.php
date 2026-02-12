@@ -1,21 +1,27 @@
 <?php
 function the_breadcrumb() {
+    // Fixed: Declare global $post
+    global $post;
+    
 	echo '<nav class="breadcrumb" aria-label="breadcrumb">';
 	echo '<ul>';
 	if (!is_home()) {
 		echo '<li>';
-            echo '<a href="'. get_option('home'). '">'. 'Inicio' . "</a>";
+            // Fixed: Use home_url() instead of deprecated get_option('home')
+            echo '<a href="'. home_url() . '">'. 'Inicio' . "</a>";
         echo "</li>";
 		//if (is_category() || is_single()) {
 			//echo '<li>';
 			//the_category(' </li><li> ');
-		if (is_single()) {
+		if (is_single() && $post) {
             $tax      = 'operacion';
-            $term     = get_the_terms($post->ID,$tax)[0];
-            $termlink = get_term_link($term->term_id,$tax);
-            //pr($term);
-            //echo "</li>";
-            if(isset($term)&& !empty($term)){
+            $terms    = get_the_terms($post->ID, $tax);
+            // Fixed: Check if terms exist before accessing
+            $term     = $terms && !is_wp_error($terms) && isset($terms[0]) ? $terms[0] : null;
+            
+            // Fixed: Only generate term link if term exists
+            if(isset($term) && !empty($term)){
+                $termlink = get_term_link($term->term_id, $tax);
                 echo "<li>";
                     echo '<a href="'.$termlink.'" title="'.$term->name.'">'.$term->name.'</a>';
                 echo "</li>";

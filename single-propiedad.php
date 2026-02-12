@@ -10,35 +10,53 @@ get_header();
 //var_dump(get_post_meta($post->ID, '_prop_features'));
 //pr(get_service_list());
 
+// Fixed: Check if meta keys exist before accessing
 $data              = get_post_meta($post->ID);
 
 $prop_title        = get_the_title();
 $prop_img          = get_the_post_thumbnail_url(null, 'thumbnail');
-$prop_address      = $data['_prop_address'][0];
-$prop_extra        = $data['_prop_extra'][0];
-$prop_feat         = $data['_prop_featured'][0];
+$prop_address      = isset($data['_prop_address'][0]) ? $data['_prop_address'][0] : '';
+$prop_extra        = isset($data['_prop_extra'][0]) ? $data['_prop_extra'][0] : '';
+$prop_feat         = isset($data['_prop_featured'][0]) ? $data['_prop_featured'][0] : '';
 
 $prop_link         = get_the_permalink();
 $mapGPS            = get_post_meta($post->ID, '_prop_map', true);
 
 //ahora estan parts/price-block.php
-//$prop_sale         = ($data['_prop_price_sale'][0]!= 0) ? number_format($data['_prop_price_sale'][0], 0, ',', '.') : '';
-//$prop_rent         = ($data['_prop_price_rent'][0]!= 0) ? number_format($data['_prop_price_rent'][0], 0, ',', '.') : '';
+// Fixed: Define sale and rent prices safely with numeric validation
+$prop_sale_raw     = isset($data['_prop_price_sale'][0]) ? $data['_prop_price_sale'][0] : '';
+$prop_rent_raw     = isset($data['_prop_price_rent'][0]) ? $data['_prop_price_rent'][0] : '';
+
+// Check if values are numeric before formatting
+$prop_sale         = is_numeric($prop_sale_raw) && $prop_sale_raw != 0 ? number_format((float)$prop_sale_raw, 0, ',', '.') : '';
+$prop_rent         = is_numeric($prop_rent_raw) && $prop_rent_raw != 0 ? number_format((float)$prop_rent_raw, 0, ',', '.') : '';
 //$prop_currency     = currency()[$data['_prop_currency'][0]];
 //$cur_symbol      = $prop_currency ? '$' : 'U$S';
 
-$type              = get_the_terms($post, 'tipo')[0];
-$ops               = get_the_terms($post, 'operacion')[0];
-$prop_loc          = get_location($post);
-$prop_phrase       = phrases()[$data['_prop_phrase'][0]];
+// Fixed: Check if terms exist before accessing
+$type_terms        = get_the_terms($post, 'tipo');
+$type              = $type_terms && !is_wp_error($type_terms) ? $type_terms[0] : null;
 
-$notification_form = get_option('tnb_extra_options')['tnb_options_notification_form'];
-$contact_form      = get_option('tnb_extra_options')['tnb_options_contact_form'];
+$ops_terms         = get_the_terms($post, 'operacion');
+$ops               = $ops_terms && !is_wp_error($ops_terms) ? $ops_terms[0] : null;
+
+// Fixed: get_location function now exists and is safe to use
+$prop_loc          = get_location($post);
+
+// Fixed: Check if phrase exists before accessing
+$phrases_list      = phrases();
+$prop_phrase_key   = isset($data['_prop_phrase'][0]) ? $data['_prop_phrase'][0] : '';
+$prop_phrase       = $prop_phrase_key && isset($phrases_list[$prop_phrase_key]) ? $phrases_list[$prop_phrase_key] : '';
+
+// Fixed: Check if options exist before accessing
+$tnb_options       = get_option('tnb_extra_options');
+$notification_form = isset($tnb_options['tnb_options_notification_form']) ? $tnb_options['tnb_options_notification_form'] : '';
+$contact_form      = isset($tnb_options['tnb_options_contact_form']) ? $tnb_options['tnb_options_contact_form'] : '';
 
 ?>
 <div class="search-panel">
 	<div class="container">
-		<?php echo get_search_form(); ?>
+		<?php tnb_get_search_form(); ?>
 	</div>
 </div>
 
@@ -84,10 +102,10 @@ $contact_form      = get_option('tnb_extra_options')['tnb_options_contact_form']
                     </span>
 					</div>
                     <div class="media-right">
-                        <a class="prop-icon-type" href="<?= isset($type) ? get_term_link($type) : get_bloginfo('home').'/?s='; ?>" title="<?php echo __('Tipo de propiedad') ?>">
-                            <span class="material-icons md-36" <?= isset($type) ? $type->name : __('Propiedad', 'tnb'); ?>>business</span>
+                        <a class="prop-icon-type" href="<?= isset($type) && !is_wp_error($type) ? get_term_link($type) : home_url().'/?s='; ?>" title="<?php echo __('Tipo de propiedad') ?>">
+                            <span class="material-icons md-36">business</span>
                             <span>
-                                <?= $type->name  ?>
+                                <?= isset($type) && !is_wp_error($type) && is_object($type) ? $type->name : __('Propiedad', 'tnb')  ?>
                             </span>
                         </a>
                     </div>

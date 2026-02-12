@@ -258,13 +258,6 @@ class CMB2_Utils {
 			return 0;
 		}
 
-		$timestamp = @strtotime( (string) $string );
-		if ( ! empty( $timestamp ) ) {
-
-			// We got a timestamp, first try!
-			return $timestamp;
-		}
-
 		$valid = self::is_valid_time_stamp( $string );
 		if ( $valid ) {
 			$timestamp  = (int) $string;
@@ -278,6 +271,8 @@ class CMB2_Utils {
 				$divider   = (int) '1' . str_repeat( '0', $diff );
 				$timestamp = round( $timestamp / $divider );
 			}
+		} else {
+			$timestamp = @strtotime( (string) $string );
 		}
 
 		return $timestamp;
@@ -541,6 +536,70 @@ class CMB2_Utils {
 		$format = preg_replace_callback( '~(?:\\\.)+~', array( __CLASS__, 'wrap_escaped_chars' ), $format );
 
 		return $format;
+	}
+
+	/**
+	 * Get a DateTime object from a value.
+	 *
+	 * @since 2.11.0
+	 *
+	 * @param string $value The value to convert to a DateTime object.
+	 *
+	 * @return DateTime|null
+	 */
+	public static function get_datetime_from_value( $value ) {
+		return is_serialized( $value )
+			// Ok, we need to unserialize the value
+			// -- allows back-compat for older field values with serialized DateTime objects.
+			? self::unserialize_datetime( $value )
+			// Handle new json formatted values.
+			: self::json_to_datetime( $value );
+	}
+
+	/**
+	 * Unserialize a datetime value string.
+	 *
+	 * This is a back-compat method for older field values with serialized DateTime objects.
+	 *
+	 * @since 2.11.0
+	 *
+	 * @param string $date_value The serialized datetime value.
+	 *
+	 * @return DateTime|null
+	 */
+	public static function unserialize_datetime( $date_value ) {
+		$datetime = @unserialize( trim( $date_value ), array( 'allowed_classes' => array( 'DateTime' ) ) );
+
+		return $datetime && $datetime instanceof DateTime ? $datetime : null;
+	}
+
+	/**
+	 * Convert a json datetime value string to a DateTime object.
+	 *
+	 * @since 2.11.0
+	 *
+	 * @param string $json_string The json value string.
+	 *
+	 * @return DateTime|null
+	 */
+	public static function json_to_datetime( $json_string ) {
+		if ( ! is_string( $json_string ) ) {
+			return null;
+		}
+
+		$json = json_decode( $json_string );
+
+		// Check if json decode was successful
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			return null;
+		}
+
+		// If so, convert to DateTime object.
+		return self::unserialize_datetime( str_replace(
+			'stdClass',
+			'DateTime',
+			serialize( $json )
+		) );
 	}
 
 	/**

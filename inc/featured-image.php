@@ -59,7 +59,9 @@
 
     $block = '';
     $gallery_images = get_post_meta( get_the_ID(), '_prop_images', 1);
-    $thumb_limit = get_option('tnb_setup_options')['tnb_setup_options_gallery'];
+    // Fixed: Check if option exists before accessing array key
+    $tnb_setup_options = get_option('tnb_setup_options');
+    $thumb_limit = isset($tnb_setup_options['tnb_setup_options_gallery']) ? $tnb_setup_options['tnb_setup_options_gallery'] : 6; // Default 6 images
     $limit = $thumb_limit; //5+1
     //$limit = 5; //5+1
 

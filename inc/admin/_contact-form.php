@@ -1,6 +1,6 @@
 <?php
   $response = "";
-/*  
+/*
     include_once (get_template_directory().'/inc/securimage/securimage.php');
     $securimage = new Securimage();
 */
@@ -33,9 +33,9 @@ function custom_contact_form($type, $message){
     $phone          = $_POST['message_phone'];
     $contactTime    = $_POST['message_contactTime'];
     $human          = $_POST['message_human'];
-    $date           = date('j/n/Y - H:i:s'); 
-    $correct        = 5; 
-    $ip             = $_SERVER['REMOTE_ADDR']; 
+    $date           = date('j/n/Y - H:i:s');
+    $correct        = 5;
+    $ip             = $_SERVER['REMOTE_ADDR'];
 
 
 //php mailer variables
@@ -68,7 +68,7 @@ $headers = "From: ". $email . "\r\n" .
                         custom_contact_form("error", $missing_content);
                     } else  {
                     //ready to go!
-                          $sendMessage = $product 
+                          $sendMessage = $product
                           . "Nombre:  "              . $name        . "\r\n"
                           . "Email:   "              . $email       . "\r\n"
                           . "Empresa: "              . $enterprise  . "\r\n"
@@ -88,7 +88,7 @@ $headers = "From: ". $email . "\r\n" .
                     }
                 }
         } elseif ($_POST['submitted']) {
-            custom_contact_form("error", $missing_content); 
+            custom_contact_form("error", $missing_content);
         }
     }
 ?>
@@ -159,7 +159,7 @@ $headers = "From: ". $email . "\r\n" .
         <div class="input none">
             <label for="message_human">Verificacion (dejar en blanco):</label>
             <input type="text" name="message_human" value="<?php echo esc_attr($_POST['message_human']); ?>" />
-        </div> 
+        </div>
         <input type="hidden" name="submitted" value="1">
         <br />
         <div class="submit">

@@ -37,7 +37,7 @@
     </div>
     <p class="button-controls">
       <span class="add-to-menu">
-        <?php /* 
+        <?php /*
         <img class="waiting" src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" alt="" />
         */ ?>
         <input type="submit"<?php disabled( $nav_menu_selected_id, 0 ); ?> class="button-secondary submit-add-to-menu" value="<?php esc_attr_e('Add to Menu'); ?>" name="add-ctp-archive-menu-item" id="submit-cpt-archive" />
@@ -56,7 +56,7 @@
     foreach ( $items as &$item ) {
       if ( $item->object != 'cpt-archive' ) continue;
       $item->url = get_post_type_archive_link( $item->type );
-      
+
       /* set current */
       if ( get_query_var( 'post_type' ) == $item->type ) {
         $item->classes []= 'current-menu-item';

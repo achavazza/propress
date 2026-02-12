@@ -1,5 +1,13 @@
 <?php
 function renderMap($lat, $lon){
+    // Check if GMaps key is available
+    if (!function_exists('tnb_has_gmaps_key') || !tnb_has_gmaps_key()) {
+        if (function_exists('tnb_gmaps_required_notice')) {
+            tnb_gmaps_required_notice();
+        }
+        return;
+    }
+
     if(isset($lat) && isset($lon)):
     ?>
 

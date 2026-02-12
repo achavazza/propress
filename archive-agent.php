@@ -1,7 +1,7 @@
 <?php get_header(); ?>
 <div class="section">
 	<div class="grid">
-		<?php echo get_search_form(); ?>
+		<?php tnb_get_search_form(); ?>
 	</div>
 </div>
 <div class="grid">
@@ -24,8 +24,8 @@
 			echo ('<h2>Blog</h2>');
 		} ?>
 
-		<div class="row">
-			<div class="quad-3">
+		<div class="columns">
+			<div class="column is-9">
 				<?php //include (TEMPLATEPATH . '/inc/nav.php' ); ?>
 
 				<?php while (have_posts()) : the_post(); ?>
@@ -48,18 +48,18 @@
 
 			<?php else : ?>
 
-				<div class="panel">
-					<h2 class="title">:( No encontramos propiedades</h2>
+				<div class="notification is-warning" style="text-align: center; padding: 2rem; margin: 2rem 0;">
+					<h3 style="margin-bottom: 1rem; color: #d96b11;"><?php echo _e('No hay propiedades de este asesor', 'tnb') ?></h3>
 					<p>
 						Por favor, vuelva al inicio
 						<hr />
-						<a class="btn btn-primary" href="<?php echo get_bloginfo('home') ?>">< Volver al Inicio</a>
+						<a class="btn btn-primary" href="<?php echo home_url() ?>">< Volver al Inicio</a>
 					</p>
 				</div>
 
 			<?php endif; ?>
 		</div>
-		<div class="quad-1">
+		<div class="column is-3">
 			<?php get_sidebar(); ?>
 		</div>
 	</div>

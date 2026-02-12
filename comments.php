@@ -11,7 +11,7 @@
 ?>
 
 <?php if ( have_comments() ) : ?>
-	
+
 	<h2 id="comments"><?php comments_number('No Responses', 'One Response', '% Responses' );?></h2>
 
 	<div class="navigation">
@@ -27,7 +27,7 @@
 		<div class="next-posts"><?php previous_comments_link() ?></div>
 		<div class="prev-posts"><?php next_comments_link() ?></div>
 	</div>
-	
+
  <?php else : // this is displayed if there are no comments so far ?>
 
 	<?php if ( comments_open() ) : ?>
@@ -37,7 +37,7 @@
 		<p>Comments are closed.</p>
 
 	<?php endif; ?>
-	
+
 <?php endif; ?>
 
 <?php if ( comments_open() ) : ?>
@@ -89,13 +89,13 @@
 			<input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
 			<?php comment_id_fields(); ?>
 		</div>
-		
+
 		<?php do_action('comment_form', $post->ID); ?>
 
 	</form>
 
 	<?php endif; // If registration required and not logged in ?>
-	
+
 </div>
 
 <?php endif; ?>

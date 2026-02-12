@@ -97,6 +97,19 @@ class PW_CMB2_Field_Google_Maps {
 	 */
 
 	public function setup_admin_scripts() {
+		// Check if GMaps key is available
+		if (!defined('GMAPS_KEY') || empty(GMAPS_KEY)) {
+			// Display admin notice for missing GMaps key
+			add_action('admin_notices', function() {
+				?>
+				<div class="notice notice-warning is-dismissible">
+					<p><strong><?php _e('Map Field Warning:', 'cmb2'); ?></strong> <?php _e('Google Maps API key is required for map fields to work. Please configure it in Theme Options.', 'cmb2'); ?></p>
+				</div>
+				<?php
+			});
+			return;
+		}
+
 		wp_register_script( 'pw-google-maps-api', '//maps.googleapis.com/maps/api/js?libraries=places&amp;key='.GMAPS_KEY, null, null );
 		//wp_enqueue_script( 'pw_gallery_init', PW_GALLERY_URL . '/js/script.js', array( 'jquery' ), null );
 		//wp_enqueue_style ( 'pw_gallery_init', PW_GALLERY_URL . '/css/style.css');

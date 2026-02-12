@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * Register a Custom Post Type (Product)
  */
 add_action('init', 'project_init');
@@ -14,7 +14,7 @@ function project_init() {
     'view_item' => __('Ver Proyecto'),
     'search_items' => __('Buscar Proyectos'),
     'not_found' => __('No se encontraron Proyectos'),
-    'not_found_in_trash' => __('No no se encontraron Proyectos en la papelera'), 
+    'not_found_in_trash' => __('No no se encontraron Proyectos en la papelera'),
     'parent_item_colon' => '',
     'menu_name' => 'Proyectos'
   );
@@ -22,17 +22,17 @@ function project_init() {
     'labels' => $labels,
     'public' => true,
     'publicly_queryable' => true,
-    'show_ui' => true, 
-    'show_in_menu' => true, 
+    'show_ui' => true,
+    'show_in_menu' => true,
     'query_var' => true,
     'rewrite' => true,
     'capability_type' => 'post',
-    'has_archive' => 'project', 
+    'has_archive' => 'project',
     'hierarchical' => false,
     'menu_position' => 3,
     'supports' => array('title', 'editor', 'thumbnail'),
     'taxonomies' => array('project-category', 'project-tag')
-  ); 
+  );
   register_post_type('project', $args);
 }
 
@@ -56,18 +56,35 @@ function project_updated_messages($messages) {
   return $messages;
 }
 
-/* Update Proyecto Help */
-add_action('contextual_help', 'project_help_text', 10, 3);
-function project_help_text($contextual_help, $screen_id, $screen) {
+/* Update Proyecto Help - deprecated contextual_help, using get_current_screen() instead */
+add_action('current_screen', 'project_help_text');
+function project_help_text($screen) {
   if ('project' == $screen->id) {
-    $contextual_help =
-    '<p>' . __('Cosas para recordar a la hora de agregar un proyecto:') . '</p>' .
-    '<ul>' .
-    '<li>' . __('Darle un título al proyecto. El título sea usado como cabecera del proyecto') . '</li>' .
-    '<li>' . __('Agregar una imagen destacada para darle el fondo al proyecto.') . '</li>' .
-    '<li>' . __('Agregar texto. El texto aparecerá en cada proyecto durante la transición.') . '</li>' .
-    '</ul>';
+    $screen->add_help_tab(
+        array(
+            'id'      => 'project_help',
+            'title'   => __('Ayuda Proyectos', 'tnb'),
+            'content' =>
+                '<p>' . __('Cosas para recordar a la hora de agregar un proyecto:') . '</p>' .
+                '<ul>' .
+                '<li>' . __('Darle un título al proyecto. El título será usado como cabecera') . '</li>' .
+                '<li>' . __('Agregar una imagen destacada para darle el fondo al proyecto.') . '</li>' .
+                '<li>' . __('Agregar texto. El texto aparecerá en cada proyecto durante la transición.') . '</li>' .
+                '</ul>',
+        )
+    );
   }
+  elseif ('edit-project' == $screen->id) {
+    $screen->add_help_tab(
+        array(
+            'id'      => 'project_edit_help',
+            'title'   => __('Ayuda Editar', 'tnb'),
+            'content' =>
+                '<p>' . __('Una lista de todos los proyectos aparece debajo. para editar un Proyecto haga click en el título.') . '</p>',
+        )
+    );
+  }
+}
   elseif ('edit-project' == $screen->id) {
     $contextual_help = '<p>' . __('Una lista de todos los proyectos aparece debajo. para editar un Proyecto haga click en el título.') . '</p>';
   }

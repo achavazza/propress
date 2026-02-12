@@ -7,17 +7,18 @@ $prop_img        = get_the_post_thumbnail_url(null, 'large');
 $default         = get_the_post_thumbnail($post->ID, 'medium');
 $thumb           = empty($prop_img) ? $default : $prop_img;
 
-$prop_address    = $data['_prop_address'][0];
-$prop_extra      = $data['_prop_extra'][0];
-$prop_feat       = $data['_prop_featured'][0];
+// Fixed: Check if array keys exist before accessing
+$prop_address    = isset($data['_prop_address'][0]) ? $data['_prop_address'][0] : '';
+$prop_extra      = isset($data['_prop_extra'][0]) ? $data['_prop_extra'][0] : '';
+$prop_feat       = isset($data['_prop_featured'][0]) ? $data['_prop_featured'][0] : '';
 
 $prop_link       = get_the_permalink();
 $mapGPS          = get_post_meta($post->ID, '_prop_map', true);
 
-$prop_rooms      = $data['_prop_rooms'][0];
-$prop_sup        = $data['_prop_sup'][0];
-$prop_dormrooms  = $data['_prop_dormrooms'][0];
-$prop_bathrooms  = $data['_prop_bathrooms'][0];
+$prop_rooms      = isset($data['_prop_rooms'][0]) ? $data['_prop_rooms'][0] : '';
+$prop_sup        = isset($data['_prop_sup'][0]) ? $data['_prop_sup'][0] : '';
+$prop_dormrooms  = isset($data['_prop_dormrooms'][0]) ? $data['_prop_dormrooms'][0] : '';
+$prop_bathrooms  = isset($data['_prop_bathrooms'][0]) ? $data['_prop_bathrooms'][0] : '';
 //$prop_garage     = $data['_prop_garage'][0];
 //$prop_time       = $data['_prop_time'][0];
 
@@ -28,10 +29,17 @@ $prop_bathrooms  = $data['_prop_bathrooms'][0];
 //$prop_currency     = currency()[$data['_prop_currency'][0]];
 //$cur_symbol      = $prop_currency ? '$' : 'U$S';
 
-$type            = get_the_terms($post, 'tipo')[0];
-$ops             = get_the_terms($post->ID, 'operacion');
+// Fixed: Safely get terms and check if they exist before accessing
+$type_terms      = get_the_terms($post, 'tipo');
+$type            = !empty($type_terms) && !is_wp_error($type_terms) ? $type_terms[0] : null;
+
+$ops_terms       = get_the_terms($post->ID, 'operacion');
+$ops             = !empty($ops_terms) && !is_wp_error($ops_terms) ? $ops_terms : null;
+
 $prop_loc        = get_location($post);
-$statuses        = get_the_terms($post->ID, 'status')[0];
+
+$status_terms    = get_the_terms($post->ID, 'status');
+$statuses        = !empty($status_terms) && !is_wp_error($status_terms) ? $status_terms[0] : null;
 
 //var_dump($prop_sale);
 
@@ -92,7 +100,7 @@ $statuses        = get_the_terms($post->ID, 'status')[0];
             </div>
             <?php if(isset($type)): ?>
                 <div class="media-right">
-                    <a class="prop-icon-type" href="<?= isset($type) ? get_term_link($type) : get_bloginfo('home').'/?s='; ?>" title="<?php echo __('Tipo de propiedad') ?>">
+                    <a class="prop-icon-type" href="<?= isset($type) ? get_term_link($type) : home_url().'/?s='; ?>" title="<?php echo __('Tipo de propiedad') ?>">
                         <span class="material-icons md-36" <?= isset($type) ? $type->name : __('Propiedad', 'tnb'); ?>>business</span>
                         <span>
                             <?= $type->name  ?>
@@ -111,7 +119,7 @@ $statuses        = get_the_terms($post->ID, 'status')[0];
                     ?>
                     <li class="level-item">
                         <span class="icon-text">
-                            <span class="icon material-icons icon-small" title="<?php echo sprintf(ngettext("%d Dormitorio", "%d Dormitorios", $dorms), $dorms); ?>">
+                            <span class="icon material-icons icon-small" title="<?php echo ($dorms == 1) ? "$dorms Dormitorio" : "$dorms Dormitorios"; ?>">
                                 hotel
                             </span>
                             <span><?php echo sprintf("%d", $dorms); ?></span>
@@ -124,7 +132,7 @@ $statuses        = get_the_terms($post->ID, 'status')[0];
                     ?>
                     <li class="level-item">
                         <span class="icon-text">
-                            <span class="icon material-icons icon-small" title="<?php echo sprintf(ngettext("%d Baño", "%d Baños", $baths), $baths);?>">
+                            <span class="icon material-icons icon-small" title="<?php echo ($baths == 1) ? "$baths Baño" : "$baths Baños";?>">
                                 bathtub
                             </span>
                             <span><?= sprintf("%d", $baths);?></span>
@@ -139,7 +147,7 @@ $statuses        = get_the_terms($post->ID, 'status')[0];
                     $dorms = intval($prop_dormrooms);
                     ?>
                     <li class="icon-text">
-                        <span class="icon material-icons icon-small" title="<?php echo sprintf(ngettext("%d Dormitorio", "%d Dormitorios", $dorms), $dorms); ?>">
+                        <span class="icon material-icons icon-small" title="<?php echo ($dorms == 1) ? "$dorms Dormitorio" : "$dorms Dormitorios"; ?>">
                             hotel
                         </span>
                         <span><?php echo sprintf("%d", $dorms); ?></span>
@@ -150,7 +158,7 @@ $statuses        = get_the_terms($post->ID, 'status')[0];
                     $baths = intval($prop_bathrooms);
                     ?>
                     <li class="icon-text">
-                        <span class="icon material-icons icon-small" title="<?php echo sprintf(ngettext("%d Baño", "%d Baños", $baths), $baths);?>">
+                        <span class="icon material-icons icon-small" title="<?php echo ($baths == 1) ? "$baths Baño" : "$baths Baños";?>">
                             bathtub
                         </span>
                         <span><?= sprintf("%d", $baths);?></span>

@@ -14,6 +14,7 @@ if ( ! class_exists( '\Cmb2Grid\Cmb2GridPlugin' ) ) {
 	class Cmb2GridPlugin extends DesignPatterns\Singleton {
 
 		const VERSION = '1.0';
+		private $url;
 
 		protected function __construct() {
 			spl_autoload_register( array( $this, 'auto_load' ) );
@@ -88,11 +89,14 @@ if ( ! class_exists( '\Cmb2Grid\Cmb2GridPlugin' ) ) {
 				.cmb2GridRow .cmb-th label:after{border:none !important}
 				.cmb2GridRow .cmb-th{width:100% !important}
 				.cmb2GridRow .cmb-td{width:100% !important}
-				.cmb2GridRow input[type="text"], .cmb2GridRow textarea, .cmb2GridRow select{width:100%}
+				.cmb2GridRow input[type="text"]:not( '.hasDatepicker' ), .cmb2GridRow textarea, .cmb2GridRow select{width:100%}
 
 				.cmb2GridRow .cmb-repeat-group-wrap{max-width:100% !important;}
 				.cmb2GridRow .cmb-group-title{margin:0 !important;}
 				.cmb2GridRow .cmb-repeat-group-wrap .cmb-row .cmbhandle, .cmb2GridRow .postbox-container .cmb-row .cmbhandle{right:0 !important}
+
+                .cmb2GridRow .cmb-type-group .cmb-remove-field-row{padding-bottom: 1.8em !important;padding-top: 1.8em !important;}
+                .cmb2GridRow .cmb-td.cmb-nested{padding-left: 15px;padding-right: 15px;}
 			</style>
 			<?php
 
@@ -133,8 +137,7 @@ if ( ! class_exists( '\Cmb2Grid\Cmb2GridPlugin' ) ) {
 /* Instantiate the class on plugins_loaded. */
 // wp_installing() function was introduced in WP 4.4.
 if ( ( function_exists( 'wp_installing' ) && wp_installing() === false ) || ( ! function_exists( 'wp_installing' ) && ( ! defined( 'WP_INSTALLING' ) || WP_INSTALLING === false ) ) ) {
-	//add_action( 'plugins_loaded', '\\' . __NAMESPACE__ . '\init' );
-	add_action( 'init', '\\' . __NAMESPACE__ . '\init' );
+	add_action( 'plugins_loaded', '\\' . __NAMESPACE__ . '\init' );
 }
 
 if ( ! function_exists( '\Cmb2Grid\init' ) ) {
@@ -153,3 +156,4 @@ if ( ! function_exists( '\Cmb2Grid\init' ) ) {
 	}
 }
 add_action( 'cmb2_init',  '\Cmb2Grid\init' );
+

@@ -2,7 +2,7 @@
 <?php
 $block = '';
 $gallery_images = get_post_meta( get_the_ID(), '_prop_images', 1);
-$thumb_limit = get_option('tnb_setup_options')['tnb_setup_options_gallery'];
+$thumb_limit = get_option('tnb_setup_options')['tnb_setup_options_gallery'] ?? '';
 $limit = 5; //5+1
 if($thumb_limit){
     $limit = intval($thumb_limit);

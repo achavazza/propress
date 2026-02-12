@@ -27,7 +27,7 @@ function cmb2_render_price_field_callback( $field, $value, $object_id, $object_t
         'currency'   => '',
 		'value'      => '',
 	) );
-    
+
 	?>
     <div class="alignleft">
         <?php echo $field_type->select( array(

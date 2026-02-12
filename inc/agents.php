@@ -13,9 +13,9 @@ if ( $related->have_posts()) {
 	echo '<div class="panel">';
 		echo sprintf('<div class="panel-head"><h3 class="h5">%s</h3></div>', __('Asesores'));
 		echo '<div class="panel-content">';
-		echo '<div class="row">';
+		echo '<div class="columns">';
 			while ($related->have_posts()): $related->the_post();
-				echo '<div class="quad-2">';
+				echo '<div class="column is-half">';
 					get_template_part('parts/agent','loop');
 				echo '</div>';
 			endwhile;

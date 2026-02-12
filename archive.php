@@ -1,7 +1,7 @@
 <?php get_header(); ?>
 <div class="search-panel block">
 	<div class="container">
-		<?php echo get_search_form(); ?>
+		<?php tnb_get_search_form(); ?>
 	</div>
 </div>
 <div class="container">
@@ -51,7 +51,7 @@
 					<p>
 						Por favor, vuelva al inicio
 						<hr />
-						<a class="btn btn-primary" href="<?php echo get_bloginfo('home') ?>">< Volver al Inicio</a>
+						<a class="btn btn-primary" href="<?php echo home_url() ?>">< Volver al Inicio</a>
 					</p>
 				</div>
 

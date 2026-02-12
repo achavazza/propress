@@ -95,22 +95,34 @@ function slide_updated_messages($messages) {
     return $messages;
 }
 
-/* Update slide Help */
-add_action('contextual_help', 'slide_help_text', 10, 3);
-    function slide_help_text($contextual_help, $screen_id, $screen) {
+/* Update slide Help - deprecated contextual_help, using get_current_screen() instead */
+add_action('current_screen', 'slide_help_text');
+    function slide_help_text($screen) {
     if ('slide' == $screen->id) {
-        $contextual_help =
-        '<p>' . __('Cosas para recordar a la hora de agregar un slide:') . '</p>' .
-        '<ul>' .
-        '<li>' . __('Darle un título. El título sea usado como cabecera') . '</li>' .
-        '<li>' . __('Agregar una imagen destacada.') . '</li>' .
-        '<li>' . __('Agregar texto. El texto aparecerá en cada slide.') . '</li>' .
-        '</ul>';
+        $screen->add_help_tab(
+            array(
+                'id'      => 'slide_help',
+                'title'   => __('Ayuda Slides', 'tnb'),
+                'content' =>
+                    '<p>' . __('Cosas para recordar a la hora de agregar un slide:') . '</p>' .
+                    '<ul>' .
+                    '<li>' . __('Darle un título. El título será usado como cabecera') . '</li>' .
+                    '<li>' . __('Agregar una imagen destacada.') . '</li>' .
+                    '<li>' . __('Agregar texto. El texto aparecerá en cada slide.') . '</li>' .
+                    '</ul>',
+            )
+        );
     }
     elseif ('edit-slide' == $screen->id) {
-        $contextual_help = '<p>' . __('Una lista de todos los slides del home aparece debajo. para editar un slide haga click en el título.') . '</p>';
+        $screen->add_help_tab(
+            array(
+                'id'      => 'slide_edit_help',
+                'title'   => __('Ayuda Editar', 'tnb'),
+                'content' =>
+                    '<p>' . __('Una lista de todos los slides del home aparece debajo. para editar un slide haga click en el título.') . '</p>',
+            )
+        );
     }
-    return $contextual_help;
 }
 
 function slide_metabox() {

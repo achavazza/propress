@@ -4,6 +4,20 @@
     </div>
     <div class="card-content">
         <?php
+            // Fixed: Get post meta safely
+            $data = get_post_meta($post->ID);
+            
+            // Fixed: Define variables safely if not already set
+            if (!isset($prop_sup)) {
+                $prop_sup = isset($data['_prop_sup'][0]) ? $data['_prop_sup'][0] : '';
+            }
+            if (!isset($prop_dormrooms)) {
+                $prop_dormrooms = isset($data['_prop_dormrooms'][0]) ? $data['_prop_dormrooms'][0] : '';
+            }
+            if (!isset($prop_bathrooms)) {
+                $prop_bathrooms = isset($data['_prop_bathrooms'][0]) ? $data['_prop_bathrooms'][0] : '';
+            }
+            
             $stat             = status();
             $prop_statuses    = get_post_meta($post->ID, '_prop_status', true);
 

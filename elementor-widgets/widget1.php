@@ -68,7 +68,7 @@ class My_Widget_1 extends Widget_Base {
         $settings = $this->get_settings_for_display();
         $url = $settings['link']['url'];
 		echo  "<a href='$url'><div class='title'>$settings[title]</div> <div class='subtitle'>$settings[subtitle]</div></a>";
-		
+
 
 	}
 

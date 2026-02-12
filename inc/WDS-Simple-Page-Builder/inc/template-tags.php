@@ -291,8 +291,10 @@ function spb_get_template_stack() {
 		}
 	}
 
-	// Ensure we're always at the beginning of the filter array.
-	reset( $wp_filter[ $tag ] );
+	// Fixed: reset() on array, not object (deprecated in PHP 8+)
+	if ( isset( $wp_filter[ $tag ] ) && is_array( $wp_filter[ $tag ] ) ) {
+		reset( $wp_filter[ $tag ] );
+	}
 
 	// Loop through 'spb_template_stack' filters, and call callback functions
 	do {

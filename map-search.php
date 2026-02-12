@@ -4,11 +4,11 @@ get_header(); ?>
 /* fix bulma minireset */
 html{overflow:hidden}</style>
 <?php wp_enqueue_script('gmaps'); ?>
-<div id="map-container">
+<div id="map-container" style="height:calc(100vh - 110px);">
 	<div class="map-layout" id="gmap_canvas"></div>
 	<div class="container map-search">
 		<div class="search-panel">
-			<?php echo get_search_form(); ?>
+			<?php tnb_get_search_form(); ?>
 		</div>
 
 		<script type="text/javascript">

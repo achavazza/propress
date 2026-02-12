@@ -16,8 +16,8 @@ get_header(); ?>
 		);
 		$loop = new WP_Query( $args );
 	?>
-	<div class="row">
-		<div class="triad-2">
+	<div class="columns">
+		<div class="column is-8">
 			<?php if ( $loop->have_posts() ) : ?>
 				<?php $i = 0 ?>
 				<div class="post-list">
@@ -26,13 +26,14 @@ get_header(); ?>
 					<?php endwhile; ?>
 				</div>
 			<?php else : ?>
-					<div class="panel">
-						<h2 class="title">:( No encontramos propiedades</h2>
-						<p>
-							Por favor, vuelva al inicio
-							<hr />
-							<a class="btn btn-primary" href="<?php echo get_bloginfo('home') ?>">< Volver al Inicio</a>
-						</p>
+					<div class="notification is-warning" style="text-align: center; padding: 2rem; margin: 2rem 0;">
+						<h3 style="margin-bottom: 1rem; color: #d96b11;"><?php echo _e('No hay propiedades disponibles', 'tnb') ?></h3>
+						<p><?php echo _e('Actualmente no hay propiedades publicadas. Por favor, vuelve más tarde o contacta con un asesor inmobiliario.', 'tnb') ?></p>
+						<div style="margin-top: 1.5rem;">
+							<a href="<?php echo home_url('/'); ?>" class="button is-primary">
+								<?php echo _e('Volver al inicio', 'tnb') ?>
+							</a>
+						</div>
 					</div>
 			<?php endif; ?>
 			<?php include (TEMPLATEPATH . '/inc/nav.php' ); ?>
@@ -46,7 +47,7 @@ get_header(); ?>
 				*/ ?>
 			<?php wp_reset_postdata(); ?>
 		</div>
-		<div class="triad-1">
+		<div class="column is-4">
 			<?php get_sidebar(); ?>
 		</div>
 	</div>
