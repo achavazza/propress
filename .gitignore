@@ -2,3 +2,13 @@
 
 # dependencies
 /node_modules
+
+# CMB2 development dependencies (not used in production)
+inc/CMB2-develop/package.json
+inc/CMB2-develop/package-lock.json
+inc/CMB2-develop/node_modules/
+
+# Other CMB2 plugins dev files
+inc/cmb2-plugins/*/package.json
+inc/cmb2-plugins/*/package-lock.json
+inc/cmb2-plugins/*/node_modules/
