@@ -112,13 +112,17 @@ if ( $loop->have_posts() ) : ?>
 		<?php endwhile; ?>
 		</div>
 
+        <?php 
+		$featured_page_url = propress_get_page_by_template('tpl-featured');
+		if ($featured_page_url): ?>
         <div class="columns is-mobile is-centered">
     		<div class="column is-one-third">
-    				<a href="<?php echo get_bloginfo('tpl-featured').'/?s=' ?>" class="button is-primary is-medium is-fullwidth">
+    				<a href="<?php echo $featured_page_url; ?>" class="button is-primary is-medium is-fullwidth">
     					<?php echo _e('Ver propiedades destacadas') ?>
     				</a>
     		</div>
     	</div>
+		<?php endif;?>
     </div>
 </div>
 <?php endif; ?>

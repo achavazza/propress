@@ -7,17 +7,18 @@ $prop_img        = get_the_post_thumbnail_url(null, 'thumbnail');
 $default         = get_the_post_thumbnail($post->ID, 'thumbnail');
 $thumb           = empty($prop_img) ? $default : $prop_img;
 
-$prop_address    = $data['_prop_address'][0];
-$prop_extra      = $data['_prop_extra'][0];
-$prop_feat       = $data['_prop_featured'][0];
+// Fixed: Check if array keys exist before accessing
+$prop_address    = isset($data['_prop_address'][0]) ? $data['_prop_address'][0] : '';
+$prop_extra      = isset($data['_prop_extra'][0]) ? $data['_prop_extra'][0] : '';
+$prop_feat       = isset($data['_prop_featured'][0]) ? $data['_prop_featured'][0] : '';
 
 $prop_link       = get_the_permalink();
 $mapGPS          = get_post_meta($post->ID, '_prop_map', true);
 
-$prop_rooms      = $data['_prop_rooms'][0];
-$prop_sup        = $data['_prop_sup'][0];
-$prop_dormrooms  = $data['_prop_dormrooms'][0];
-$prop_bathrooms  = $data['_prop_bathrooms'][0];
+$prop_rooms      = isset($data['_prop_rooms'][0]) ? $data['_prop_rooms'][0] : '';
+$prop_sup        = isset($data['_prop_sup'][0]) ? $data['_prop_sup'][0] : '';
+$prop_dormrooms  = isset($data['_prop_dormrooms'][0]) ? $data['_prop_dormrooms'][0] : '';
+$prop_bathrooms  = isset($data['_prop_bathrooms'][0]) ? $data['_prop_bathrooms'][0] : '';
 //$prop_garage     = $data['_prop_garage'][0];
 //$prop_time       = $data['_prop_time'][0];
 
@@ -28,10 +29,15 @@ $prop_bathrooms  = $data['_prop_bathrooms'][0];
 //$prop_currency     = currency()[$data['_prop_currency'][0]];
 //$cur_symbol      = $prop_currency ? '$' : 'U$S';
 
-$type            = get_the_terms($post, 'tipo')[0];
+// Fixed: Check if terms exist before accessing
+$type_terms      = get_the_terms($post, 'tipo');
+$type            = $type_terms && !is_wp_error($type_terms) && isset($type_terms[0]) ? $type_terms[0] : null;
+
 $ops             = get_the_terms($post->ID, 'operacion');
 $prop_loc        = get_location($post);
-$statuses        = get_the_terms($post->ID, 'status')[0];
+
+$status_terms    = get_the_terms($post->ID, 'status');
+$statuses        = $status_terms && !is_wp_error($status_terms) && isset($status_terms[0]) ? $status_terms[0] : null;
 
 //var_dump($prop_sale);
 

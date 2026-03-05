@@ -71,8 +71,44 @@ require_once ('inc/post-types/propiedad.php');
 require_once 'inc/custom-functions.php';
 // require_once 'inc/admin/disable-comments.php';
 // require_once 'inc/admin/wp-cpt-archives-in-menu.php';
-// require_once 'inc/admin/theme-options-sub.php';
+require_once 'inc/admin/theme-options-sub.php';
 // require_once 'inc/WDS-Simple-Page-Builder/wds-simple-page-builder.php';
+
+/*
+ * Page Templates
+ * Uncomment any template files you want to use
+ * =========================================================
+ * These template files should be available in the theme root:
+ * - tpl-featured.php  (Template Name: Destacadas)
+ * - tpl-properties.php (Template Name: Todas las propiedades)
+ * - tpl-map.php       (Template Name: Mapa de propiedades)
+ * - tpl-blog.php      (Template Name: Blog)
+ * - tpl-contact.php   (Template Name: Contacto)
+ * - tpl-fullwidth.php (Template Name: Full Width)
+ * - tpl-nosidebar.php (Template Name: Sin Sidebar)
+ * 
+ * After enabling, create a page in WordPress and select the template
+ * from the "Page Attributes" box.
+ */
+
+// Helper function to get page URL by template name
+function propress_get_page_by_template($template_name) {
+    $pages = get_posts([
+        'post_type' => 'page',
+        'post_status' => 'publish',
+        'meta_query' => [
+            [
+                'key' => '_wp_page_template',
+                'value' => $template_name . '.php',
+                'compare' => '='
+            ]
+        ]
+    ]);
+    if (!empty($pages)) {
+        return get_permalink($pages[0]->ID);
+    }
+    return false;
+}
 
 
 
@@ -175,6 +211,7 @@ require_once 'inc/custom-functions.php';
             return $message;
         }
     }
+    
 
     /*
      * Properly enqueue of styles and scripts
@@ -255,6 +292,8 @@ require_once 'inc/custom-functions.php';
         ));
     }
     */
+
+    
 
     /*
      * Add support RSS feed, thumbnails and stuff

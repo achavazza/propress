@@ -5,6 +5,7 @@ function pagenavi( $p = 2 ) { // pages will be show before and after current pag
     $labelPage  = __('Página', 'tnb');
     $class      = 'pagination-link';
     $current    = 'is-current';
+    $title      = '';
 
     if ( is_singular() ){
         return; // don't show in single page

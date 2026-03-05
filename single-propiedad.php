@@ -21,6 +21,10 @@ $prop_feat         = isset($data['_prop_featured'][0]) ? $data['_prop_featured']
 
 $prop_link         = get_the_permalink();
 $mapGPS            = get_post_meta($post->ID, '_prop_map', true);
+// Fixed: Ensure mapGPS is a valid array before accessing keys
+if (!is_array($mapGPS) || empty($mapGPS['latitude']) || empty($mapGPS['longitude'])) {
+    $mapGPS = array('latitude' => '', 'longitude' => '');
+}
 
 //ahora estan parts/price-block.php
 // Fixed: Define sale and rent prices safely with numeric validation

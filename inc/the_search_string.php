@@ -80,9 +80,11 @@ function get_search_string($wp_query){
     }else{
         $foundLabel = plural($count, 'encontrada', 'encontradas');
     }
+    $searchLabel = '';
     if($search){
         $searchLabel = ' con '.$search;
     }
+    $opLabel = '';
     if(isset($op) && !empty($op)){
         $opLabel = sprintf('en <b>%s</b>', $op);
     }

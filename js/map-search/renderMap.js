@@ -1,4 +1,9 @@
 function init_map(map_div){
+    // Check if lat and lon are defined
+    if (typeof lat === 'undefined' || typeof lon === 'undefined' || !lat || !lon) {
+        console.log('Map coordinates not defined');
+        return;
+    }
     // Options
     //console.log(lat);
     //console.log(lon);
@@ -14,6 +19,11 @@ function init_map(map_div){
 // Initializes google map
 //google.maps.event.addDomListener(window, 'load', init_map);
 function init_street_view(map_div) {
+    // Check if lat and lon are defined
+    if (typeof lat === 'undefined' || typeof lon === 'undefined' || !lat || !lon) {
+        console.log('Street View coordinates not defined');
+        return;
+    }
     var fenway = {lat: lat, lng: lon};
     var map = new google.maps.Map(document.getElementById(map_div), {
         center: fenway,
@@ -31,8 +41,10 @@ function init_street_view(map_div) {
     }
 
     $(function(){
-        //alert('lala');
-        init_map('gmap_canvas');
+        // Only init map if coordinates are defined
+        if (typeof lat !== 'undefined' && typeof lon !== 'undefined' && lat && lon) {
+            init_map('gmap_canvas');
+        }
         /*
         $(window).on('load',function(){
         init_map('gmap_canvas');
