@@ -48,9 +48,9 @@ $related = new WP_Query( $args );
 //pr($related);
 if ( $related->have_posts()) {
 	echo '<h2 class="h3 title">Propiedades Similares</h2>';
-	echo '<div class="colums is-same-height">';
+	echo '<div class="columns is-same-height is-multiline">';
 	while ($related->have_posts()): $related->the_post();
-		echo '<div class="columns is-one-third">';
+		echo '<div class="column is-one-third">';
 		get_template_part('parts/post','loop');
 		echo '</div>';
 	endwhile;
