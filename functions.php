@@ -55,7 +55,9 @@ if ( file_exists(CMB_PATH . '/init.php' ) ) {
     //include('inc/post-types/internal.php');
 }
 function cmb2_style_fixes() {
-    wp_register_style('cmb2_style_fixes', get_template_directory_uri(). '/inc/cmb2-plugins/cmb2_fixes.css', false, '1.0.0' );
+    $css_file = get_template_directory() . '/inc/cmb2-plugins/cmb2_fixes.css';
+    $version  = file_exists( $css_file ) ? filemtime( $css_file ) : '1.0.0';
+    wp_register_style('cmb2_style_fixes', get_template_directory_uri(). '/inc/cmb2-plugins/cmb2_fixes.css', false, $version );
     wp_enqueue_style('cmb2_style_fixes');
 }
 add_action( 'admin_enqueue_scripts', 'cmb2_style_fixes');
@@ -320,6 +322,98 @@ function propress_get_page_by_template($template_name) {
          );
          return $currency;
     }
+
+    /**
+     * Currency registry: code => label + symbol.
+     * The key is what gets stored in post meta, kept backwards compatible with
+     * the legacy '$' / 'U$S' values. 'otro' lets the user type a custom symbol.
+     */
+    function tnb_currencies() {
+        return array(
+            '$'    => array( 'label' => __( 'Peso', 'tnb' ),  'symbol' => '$' ),
+            'U$S'  => array( 'label' => __( 'Dólar', 'tnb' ), 'symbol' => 'U$S' ),
+            '€'    => array( 'label' => __( 'Euro', 'tnb' ),  'symbol' => '€' ),
+            'R$'   => array( 'label' => __( 'Real', 'tnb' ),  'symbol' => 'R$' ),
+            'otro' => array( 'label' => __( 'Otro', 'tnb' ),  'symbol' => '' ),
+        );
+    }
+
+    /**
+     * Currency options as code => "Label (symbol)" for select fields.
+     */
+    function tnb_currency_options_labels() {
+        $options = array();
+        foreach ( tnb_currencies() as $code => $currency ) {
+            $label = $currency['label'];
+            if ( 'otro' !== $code && $currency['symbol'] !== '' ) {
+                $label .= ' (' . $currency['symbol'] . ')';
+            }
+            $options[ $code ] = $label;
+        }
+        return $options;
+    }
+
+    /**
+     * Resolve the symbol to display for a stored currency code.
+     */
+    function tnb_currency_symbol( $currency, $custom = '' ) {
+        $currencies = tnb_currencies();
+
+        if ( 'otro' === $currency ) {
+            return $custom !== '' ? $custom : '$';
+        }
+        if ( $currency !== '' && isset( $currencies[ $currency ] ) ) {
+            return $currencies[ $currency ]['symbol'];
+        }
+        if ( $currency !== '' ) {
+            // Backwards compatibility: legacy values stored the symbol itself.
+            return $currency;
+        }
+
+        return '$';
+    }
+
+    /**
+     * Get the numeric value out of a stored price (array or legacy scalar).
+     */
+    function tnb_price_value( $raw ) {
+        return is_array( $raw ) && isset( $raw['value'] ) ? $raw['value'] : $raw;
+    }
+
+    /**
+     * Whether a stored price should be considered empty (empty or zero).
+     */
+    function tnb_price_is_empty( $raw ) {
+        $value = tnb_price_value( $raw );
+
+        if ( $value === null || $value === '' ) {
+            return true;
+        }
+
+        $number = str_replace( array( '.', ' ' ), '', trim( (string) $value ) );
+        $number = str_replace( ',', '.', $number );
+
+        return is_numeric( $number ) && (float) $number == 0;
+    }
+
+    /**
+     * Format a stored price as "SYMBOL 1.000.000".
+     * Accepts the array produced by the currency_price field or a legacy scalar.
+     */
+    function tnb_format_price( $raw ) {
+        if ( tnb_price_is_empty( $raw ) ) {
+            return '';
+        }
+
+        $value    = tnb_price_value( $raw );
+        $currency = is_array( $raw ) && isset( $raw['currency'] ) ? $raw['currency'] : '';
+        $custom   = is_array( $raw ) && isset( $raw['symbol'] ) ? $raw['symbol'] : '';
+        $symbol   = tnb_currency_symbol( $currency, $custom );
+        $number   = is_numeric( $value ) ? number_format( (float) $value, 0, ',', '.' ) : $value;
+
+        return trim( $symbol . ' ' . $number );
+    }
+
     function orientation(){
         global $orientation;
         $orientation = array(
@@ -923,5 +1017,3 @@ function propress_debug_flush_frontend() {
     }
 }
 */
-
-    ?>

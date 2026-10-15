@@ -570,8 +570,8 @@ function cmb2_prop_taxes(){
         'name' => 'Importe',
         'desc' => 'Monto total de los gastos iniciales',
         'id'   => '_prop_tax_title',
-        'type' => 'text_money',
-        //'type' => 'text',
+        'type' => 'currency_price',
+        //'type' => 'text_money',
         // 'repeatable' => true, // Repeatable fields are supported w/in repeatable groups (for most types)
     ));
     $cmb6->add_field(array(
@@ -601,8 +601,8 @@ function cmb2_prop_taxes(){
         'name' => 'Importe',
         'desc' => 'Monto total de los gastos iniciales',
         'id'   => '_prop_tax_month_title',
-        'type' => 'text_money',
-        //'type' => 'text',
+        'type' => 'currency_price',
+        //'type' => 'text_money',
         // 'repeatable' => true, // Repeatable fields are supported w/in repeatable groups (for most types)
     ));
     $cmb6->add_field(array(
@@ -656,6 +656,18 @@ function cmb2_prop_taxes(){
         'default' => 'Importe Año',
         'type' => 'text',
         // 'repeatable' => true, // Repeatable fields are supported w/in repeatable groups (for most types)
+    ));
+    $cmb5->add_group_field( $group_rent_years, array(
+        'name'    => 'Moneda',
+        'id'      => 'currency',
+        'type'    => 'select',
+        'options' => tnb_currency_options_labels(),
+    ));
+    $cmb5->add_group_field( $group_rent_years, array(
+        'name' => 'Símbolo',
+        'desc' => 'Solo si eligió "Otro"',
+        'id'   => 'symbol',
+        'type' => 'text',
     ));
     $cmb5->add_group_field( $group_rent_years, array(
         'name' => 'Valor',

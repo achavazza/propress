@@ -5,12 +5,21 @@
  * @return string       html string containing all currency options
  */
 function cmb2_get_currency_options( $value = false ) {
-    $currency_list = array('$'=>'$', 'U$S'=>'U$S');
-	//$currency_list = array( 'AL'=>'Alabama','AK'=>'Alaska','AZ'=>'Arizona','AR'=>'Arkansas','CA'=>'California','CO'=>'Colorado','CT'=>'Connecticut','DE'=>'Delaware','DC'=>'District Of Columbia','FL'=>'Florida','GA'=>'Georgia','HI'=>'Hawaii','ID'=>'Idaho','IL'=>'Illinois','IN'=>'Indiana','IA'=>'Iowa','KS'=>'Kansas','KY'=>'Kentucky','LA'=>'Louisiana','ME'=>'Maine','MD'=>'Maryland','MA'=>'Massachusetts','MI'=>'Michigan','MN'=>'Minnesota','MS'=>'Mississippi','MO'=>'Missouri','MT'=>'Montana','NE'=>'Nebraska','NV'=>'Nevada','NH'=>'New Hampshire','NJ'=>'New Jersey','NM'=>'New Mexico','NY'=>'New York','NC'=>'North Carolina','ND'=>'North Dakota','OH'=>'Ohio','OK'=>'Oklahoma','OR'=>'Oregon','PA'=>'Pennsylvania','RI'=>'Rhode Island','SC'=>'South Carolina','SD'=>'South Dakota','TN'=>'Tennessee','TX'=>'Texas','UT'=>'Utah','VT'=>'Vermont','VA'=>'Virginia','WA'=>'Washington','WV'=>'West Virginia','WI'=>'Wisconsin','WY'=>'Wyoming' );
+    $currencies = function_exists( 'tnb_currencies' )
+        ? tnb_currencies()
+        : array(
+            '$'   => array( 'label' => '$',   'symbol' => '$' ),
+            'U$S' => array( 'label' => 'U$S', 'symbol' => 'U$S' ),
+            'otro' => array( 'label' => 'Otro', 'symbol' => '' ),
+        );
 
 	$currency_options = '';
-	foreach ( $currency_list as $abrev => $currency ) {
-		$currency_options .= '<option value="'. $abrev .'" '. selected( $value, $abrev, false ) .'>'. $currency .'</option>';
+	foreach ( $currencies as $code => $currency ) {
+		$label = $currency['label'];
+		if ( 'otro' !== $code && $currency['symbol'] !== '' ) {
+			$label .= ' (' . $currency['symbol'] . ')';
+		}
+		$currency_options .= '<option value="'. esc_attr( $code ) .'" '. selected( $value, $code, false ) .'>'. esc_html( $label ) .'</option>';
 	}
 
 	return $currency_options;
@@ -22,31 +31,48 @@ function cmb2_get_currency_options( $value = false ) {
 function cmb2_render_price_field_callback( $field, $value, $object_id, $object_type, $field_type ) {
 
     //pr($field);
-	// make sure we specify each part of the value we need.
+    // make sure we specify each part of the value we need.
 	$value = wp_parse_args( $value, array(
         'currency'   => '',
+        'symbol'     => '',
 		'value'      => '',
 	) );
 
+	$show_custom = ( 'otro' === $value['currency'] ) ? 'flex' : 'none';
+
 	?>
-    <div class="alignleft">
-        <?php echo $field_type->select( array(
-            'name'    => $field_type->_name( '[currency]' ),
-            'id'      => $field_type->_id( '_currency' ),
-            'options' => cmb2_get_currency_options( $value['currency'] ),
-            'desc'    => '',
-        ) ); ?>
+    <div class="tnb-currency-price">
+        <div class="tnb-currency-price__item">
+            <?php echo $field_type->select( array(
+                'name'     => $field_type->_name( '[currency]' ),
+                'id'       => $field_type->_id( '_currency' ),
+                'options'  => cmb2_get_currency_options( $value['currency'] ),
+                'class'    => 'cmb2_select cmb2_currency_select',
+                'onchange' => "var row=this.closest('.cmb-row');var box=row?row.querySelector('.cmb2_currency_custom'):null;if(box){box.style.display=(this.value==='otro')?'flex':'none';}",
+                'desc'     => '',
+            ) ); ?>
+        </div>
+        <div class="tnb-currency-price__item tnb-currency-price__custom cmb2_currency_custom" style="display:<?php echo esc_attr( $show_custom ); ?>">
+            <?php echo $field_type->input( array(
+                'class'       => 'cmb_text_small',
+                'type'        => 'text',
+                'name'        => $field_type->_name( '[symbol]' ),
+                'id'          => $field_type->_id( '_symbol' ),
+                'value'       => $value['symbol'],
+                'placeholder' => __( 'Símbolo', 'tnb' ),
+                'desc'        => '',
+            ) ); ?>
+        </div>
+        <div class="tnb-currency-price__item tnb-currency-price__value">
+            <?php echo $field_type->input( array(
+                'class' => 'cmb_text_small',
+                'name'  => $field_type->_name( '[value]' ),
+                'id'    => $field_type->_id( '_value' ),
+                'value' => $value['value'],
+                'desc'  => '',
+            ) ); ?>
+        </div>
     </div>
-	<div class="alignleft">
-		<?php echo $field_type->input( array(
-			'class' => 'cmb_text_small',
-			'name'  => $field_type->_name( '[value]' ),
-			'id'    => $field_type->_id( '_value' ),
-			'value' => $value['value'],
-			'desc'  => '',
-		) ); ?>
-	</div>
-	<br class="clear">
 	<?php
 	echo $field_type->_desc( true );
 

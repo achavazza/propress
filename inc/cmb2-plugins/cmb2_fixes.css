@@ -13,3 +13,27 @@
 .widget-content .cmb2-wrap .regular-text{
     width: 400px;
 }
+
+/* currency_price field: keep select / custom symbol / value aligned in one row */
+.cmb-type-currency-price .tnb-currency-price{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.cmb-type-currency-price .tnb-currency-price__item{
+    display: flex;
+    align-items: center;
+}
+.cmb-type-currency-price .tnb-currency-price select.cmb2_select,
+.cmb-type-currency-price .tnb-currency-price input,
+.cmb-type-currency-price .tnb-currency-price .cmb2_select{
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.cmb-type-currency-price .tnb-currency-price__custom input{
+    width: 80px;
+}
+.cmb-type-currency-price .tnb-currency-price__value input{
+    width: 130px;
+}

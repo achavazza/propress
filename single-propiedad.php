@@ -28,12 +28,12 @@ if (!is_array($mapGPS) || empty($mapGPS['latitude']) || empty($mapGPS['longitude
 
 //ahora estan parts/price-block.php
 // Fixed: Define sale and rent prices safely with numeric validation
+// Each operation carries its own currency; only presence matters here.
 $prop_sale_raw     = isset($data['_prop_price_sale'][0]) ? $data['_prop_price_sale'][0] : '';
 $prop_rent_raw     = isset($data['_prop_price_rent'][0]) ? $data['_prop_price_rent'][0] : '';
 
-// Check if values are numeric before formatting
-$prop_sale         = is_numeric($prop_sale_raw) && $prop_sale_raw != 0 ? number_format((float)$prop_sale_raw, 0, ',', '.') : '';
-$prop_rent         = is_numeric($prop_rent_raw) && $prop_rent_raw != 0 ? number_format((float)$prop_rent_raw, 0, ',', '.') : '';
+$prop_sale         = tnb_price_is_empty($prop_sale_raw) ? '' : tnb_format_price($prop_sale_raw);
+$prop_rent         = tnb_price_is_empty($prop_rent_raw) ? '' : tnb_format_price($prop_rent_raw);
 //$prop_currency     = currency()[$data['_prop_currency'][0]];
 //$cur_symbol      = $prop_currency ? '$' : 'U$S';
 
