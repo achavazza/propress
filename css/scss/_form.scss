@@ -21,9 +21,9 @@ select.wpcf7-form-control{
 }
 .wpcf7-submit{
     @extend .button;
-    @extend .button.is-primary;
-    @extend .button.is-fullwidth;
-
+    @include btn-primary;
+    display: flex;
+    width: 100%;
 }
 .wpcf7 .ajax-loader:empty{
     display: none;

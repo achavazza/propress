@@ -3,7 +3,7 @@ html{
     font-size: 14px;
 }
 body{
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Geist', sans-serif;
 }
 
 
@@ -35,6 +35,26 @@ background: $white
 /* styling */
 #page-wrap {
     background: #fafafa;
+}
+
+/* Cards clip their content so images follow the rounded corners */
+.card {
+    overflow: hidden;
+}
+
+/* image corners follow the theme style */
+figure.image img,
+a.image img,
+.content img,
+.wp-caption img,
+.gallery img {
+    border-radius: $image-radius;
+}
+
+/* images flush at the top of a card stay straight and are clipped by the card */
+.card .card-image img,
+.card .card-image figure.image img {
+    border-radius: 0;
 }
 .card-header{
     box-shadow: unset;

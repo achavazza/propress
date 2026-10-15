@@ -158,6 +158,13 @@ function tnb_main_options_metabox() {
  	));
 
 	$setup_options->add_field( array(
+ 		'name'     => 'Map ID',
+		'id'       => 'tnb_setup_map_id',
+		'desc'     => 'Map ID de Google Maps (obligatorio para los marcadores avanzados). Creá uno en Google Cloud Console. Si se deja vacío se usa "DEMO_MAP_ID" (solo pruebas).',
+ 		'type'     => 'text',
+ 	));
+
+	$setup_options->add_field( array(
  		'name'     => 'Latitud',
 		'id'       => 'tnb_setup_lat',
 		'desc'     => 'Latitud por defecto',

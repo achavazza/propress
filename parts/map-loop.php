@@ -22,7 +22,12 @@ $prop_time       = (isset($args['_prop_time'][0]) && $args['_prop_time'][0] != 0
 
 
 
-$type            = get_the_terms($post, 'tipo')[0];
+$type_terms      = get_the_terms($post, 'tipo');
+$type            = $type_terms && !is_wp_error($type_terms) && isset($type_terms[0]) ? $type_terms[0] : null;
+$type_icon       = $type ? tnb_get_term_icon($type->term_id) : '';
+if (!$type_icon) {
+    $type_icon = 'building-2';
+}
 $prop_loc        = get_location($post);
  ?>
 <div class="media is-align-items-center">
@@ -62,8 +67,8 @@ $prop_loc        = get_location($post);
                         ?>
                         <li class="level-item">
                             <span class="icon-text">
-                                <span class="icon material-icons icon-small" title="<?php echo ($dorms == 1) ? "$dorms Dormitorio" : "$dorms Dormitorios"; ?>">
-                                    hotel
+                                <span class="icon" title="<?php echo ($dorms == 1) ? "$dorms Dormitorio" : "$dorms Dormitorios"; ?>">
+                                    <?php echo tnb_icon('bed'); ?>
                                 </span>
                                 <span><?php echo sprintf("%d", $dorms); ?></span>
                             </span>
@@ -75,8 +80,8 @@ $prop_loc        = get_location($post);
                         ?>
                         <li class="level-item">
                             <span class="icon-text">
-                                <span class="icon material-icons icon-small" title="<?php echo ($baths == 1) ? "$baths Baño" : "$baths Baños";?>">
-                                    bathtub
+                                <span class="icon" title="<?php echo ($baths == 1) ? "$baths Baño" : "$baths Baños";?>">
+                                    <?php echo tnb_icon('toilet'); ?>
                                 </span>
                                 <span><?= sprintf("%d", $baths);?></span>
                             </span>

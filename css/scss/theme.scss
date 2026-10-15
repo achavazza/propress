@@ -2,8 +2,40 @@
 $blue:         hsl(217, 71%,  53%);
 $primary: $blue;
 
+// Rounded corners on all card panels
+$card-radius: 10px;
+
+// Rounded corners shared by gallery / content images
+$image-radius: 10px;
+
 @charset "utf-8";
 @import "../../node_modules/bulma/bulma.sass";
+
+// Reusable primary-button styling (Bulma 0.9 ships no mixin for this and
+// compound @extend is no longer allowed by dart-sass).
+@mixin btn-primary($color: $primary) {
+    background-color: $color;
+    border-color: transparent;
+    color: findColorInvert($color);
+
+    &:hover, &.is-hovered {
+        background-color: darken($color, 2.5%);
+        border-color: transparent;
+        color: findColorInvert($color);
+    }
+    &:focus, &.is-focused {
+        border-color: transparent;
+        color: findColorInvert($color);
+    }
+    &:focus:not(:active), &.is-focused:not(:active) {
+        box-shadow: 0 0 0 .125em rgba($color, .25);
+    }
+    &:active, &.is-active {
+        background-color: darken($color, 5%);
+        border-color: transparent;
+        color: findColorInvert($color);
+    }
+}
 
 @import "./plugins/photoswipe/_photoswipe.scss";
 @import "./plugins/photoswipe/_photoswipe-ui.scss";

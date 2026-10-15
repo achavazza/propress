@@ -1,0 +1,97 @@
+.tnb-icon-picker {
+	position: relative;
+	max-width: 520px;
+}
+
+.tnb-icon-picker__current {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.tnb-icon-picker__preview {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	background: #fff;
+	color: #1d2327;
+}
+
+.tnb-icon-picker__preview svg {
+	width: 22px;
+	height: 22px;
+}
+
+.tnb-icon-picker__name {
+	font-family: monospace;
+	color: #646970;
+}
+
+.tnb-icon-picker__panel {
+	margin-top: 10px;
+	padding: 10px;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	background: #fff;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.tnb-icon-picker__search {
+	width: 100%;
+	max-width: 100%;
+	margin-bottom: 10px;
+}
+
+.tnb-icon-picker__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+	gap: 6px;
+	max-height: 320px;
+	overflow-y: auto;
+}
+
+.tnb-icon-picker__item {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 1px solid #f0f0f1;
+	border-radius: 6px;
+	background: #f6f7f7;
+	color: #1d2327;
+	cursor: pointer;
+}
+
+.tnb-icon-picker__item:hover {
+	background: #fff;
+	border-color: #2271b1;
+	color: #2271b1;
+}
+
+.tnb-icon-picker__item svg {
+	width: 22px;
+	height: 22px;
+}
+
+.tnb-icon-picker__empty {
+	grid-column: 1 / -1;
+	color: #646970;
+	margin: 0;
+}
+
+.column-tnb_icon {
+	width: 60px;
+}
+
+.column-tnb_icon svg {
+	width: 22px;
+	height: 22px;
+	vertical-align: middle;
+}

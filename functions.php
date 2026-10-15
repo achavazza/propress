@@ -194,6 +194,11 @@ function propress_get_page_by_template($template_name) {
     }
     define('GMAPS_KEY', $tnb_options['tnb_setup_API'] ?? '');
 
+    // Map ID is required by AdvancedMarkerElement (new Maps markers)
+    if (!defined('TNB_GMAPS_MAP_ID')) {
+        define('TNB_GMAPS_MAP_ID', !empty($tnb_options['tnb_setup_map_id']) ? $tnb_options['tnb_setup_map_id'] : 'DEMO_MAP_ID');
+    }
+
     // Helper function to check if GMaps key is available
     function tnb_has_gmaps_key() {
         return !empty(GMAPS_KEY);
@@ -224,9 +229,17 @@ function propress_get_page_by_template($template_name) {
         wp_enqueue_style( 'style'      , get_template_directory_uri().'/css/style.min.css' );
         //wp_enqueue_style( 'goglefonts',    '//fonts.googleapis.com/css2?family=Oxygen:wght@400;700&display=swap' );
         //wp_enqueue_style( 'opensans', '//fonts.googleapis.com/css?family=Open+Sans:400' );
-        wp_enqueue_style( 'roboto', '//fonts.googleapis.com/css?family=Roboto:400,400i,700,700i&display=swap' );
+        wp_enqueue_style( 'geist', '//fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap' );
         wp_enqueue_style( 'icons',  '//fonts.googleapis.com/icon?family=Material+Icons' );
         //wp_enqueue_style( 'icons',  '//fonts.googleapis.com/css2?family=Material+Icons' );
+
+        // Lucide icons (bundled locally)
+        wp_enqueue_style( 'tnb-icons', get_template_directory_uri().'/inc/lucide/tnb-icons.css', array(), '1.0.0' );
+        wp_enqueue_script( 'lucide', get_template_directory_uri().'/inc/lucide/lucide.min.js', array(), '1.57.0', true );
+        wp_enqueue_script( 'tnb-icons', get_template_directory_uri().'/inc/lucide/tnb-icons.js', array( 'lucide' ), '1.0.0', true );
+
+        // Property details grid
+        wp_enqueue_style( 'prop-details', get_template_directory_uri().'/css/prop-details.css', array(), filemtime( get_template_directory().'/css/prop-details.css' ) );
 
         //wp_enqueue_script( 'scripts', get_template_directory_uri() . '/js/example.js', array(), '1.0.0', true );
         if ( !is_admin() ) {
@@ -249,10 +262,15 @@ function propress_get_page_by_template($template_name) {
 
         // Only register GMaps scripts if API key is available
         if (tnb_has_gmaps_key()) {
-            wp_register_script('gmaps'        , ('http://maps.google.com/maps/api/js?&key='.GMAPS_KEY.'&callback=initMap'), array('initmaps'), null, true);
+            wp_register_script('gmaps'        , ('https://maps.google.com/maps/api/js?key='.GMAPS_KEY.'&libraries=marker&callback=initMap&loading=async'), array('initmaps'), null, true);
             //wp_register_script('gmapscluster' , (''), array('gmaps'), null, true);
-            wp_register_script('map'          , ('http://maps.google.com/maps/api/js?&key='.GMAPS_KEY), array(), null, true);
+            wp_register_script('map'          , ('https://maps.google.com/maps/api/js?key='.GMAPS_KEY.'&libraries=marker&loading=async'), array(), null, true);
             wp_register_script('renderMap'     , (get_template_directory_uri().'/js/map-search/renderMap.js'), array('map', 'infobubble', 'jquery'), '1.0.0', true);
+
+            // Expose the Map ID (required by AdvancedMarkerElement) to the maps scripts
+            $tnb_maps_config = array( 'mapId' => ( defined('TNB_GMAPS_MAP_ID') ? TNB_GMAPS_MAP_ID : 'DEMO_MAP_ID' ) );
+            wp_localize_script('initmaps', 'tnbMaps', $tnb_maps_config);
+            wp_localize_script('renderMap', 'tnbMaps', $tnb_maps_config);
         }
 
         //wp_register_script('scripts'      , get_template_directory_uri().'/js/scripts.js', array('bootstrap', 'jquery'), null, true);
@@ -309,6 +327,7 @@ function propress_get_page_by_template($template_name) {
 
     //require_once(get_template_directory().'/inc/price-block.php');
     require_once 'inc/price-block.php';
+    require_once 'inc/term-icons.php';
 
   /*
      * Cunstom frontend functions
@@ -412,6 +431,54 @@ function propress_get_page_by_template($template_name) {
         $number   = is_numeric( $value ) ? number_format( (float) $value, 0, ',', '.' ) : $value;
 
         return trim( $symbol . ' ' . $number );
+    }
+
+    /**
+     * Taxonomies that support a per-term Lucide icon.
+     */
+    function tnb_icon_taxonomies() {
+        return array( 'tipo', 'features', 'services' );
+    }
+
+    /**
+     * Output a Lucide icon placeholder. The bundled lucide.js turns the
+     * <i data-lucide="..."> into an inline SVG on the client.
+     *
+     * @param string $name  Lucide icon name (kebab-case), e.g. "toilet".
+     * @param string $class Extra CSS classes.
+     * @param int    $size  Optional square size in pixels.
+     */
+    function tnb_icon( $name, $class = '', $size = null ) {
+        if ( empty( $name ) ) {
+            return '';
+        }
+
+        $classes = trim( 'tnb-icon ' . $class );
+        $style   = '';
+        if ( $size ) {
+            $size  = (int) $size;
+            $style = sprintf( ' style="width:%1$dpx;height:%1$dpx;"', $size );
+        }
+
+        return sprintf(
+            '<i class="%s" data-lucide="%s" aria-hidden="true"%s></i>',
+            esc_attr( $classes ),
+            esc_attr( $name ),
+            $style
+        );
+    }
+
+    /**
+     * Get the Lucide icon stored for a term (empty string if none).
+     *
+     * @param int $term_id Term ID.
+     */
+    function tnb_get_term_icon( $term_id ) {
+        if ( ! $term_id ) {
+            return '';
+        }
+
+        return (string) get_term_meta( $term_id, '_tnb_icon', true );
     }
 
     function orientation(){

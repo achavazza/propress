@@ -40,6 +40,10 @@ $prop_rent         = tnb_price_is_empty($prop_rent_raw) ? '' : tnb_format_price(
 // Fixed: Check if terms exist before accessing
 $type_terms        = get_the_terms($post, 'tipo');
 $type              = $type_terms && !is_wp_error($type_terms) ? $type_terms[0] : null;
+$type_icon         = $type ? tnb_get_term_icon($type->term_id) : '';
+if (!$type_icon) {
+    $type_icon = 'building-2';
+}
 
 $ops_terms         = get_the_terms($post, 'operacion');
 $ops               = $ops_terms && !is_wp_error($ops_terms) ? $ops_terms[0] : null;
@@ -107,7 +111,7 @@ $contact_form      = isset($tnb_options['tnb_options_contact_form']) ? $tnb_opti
 					</div>
                     <div class="media-right">
                         <a class="prop-icon-type" href="<?= isset($type) && !is_wp_error($type) ? get_term_link($type) : home_url().'/?s='; ?>" title="<?php echo __('Tipo de propiedad') ?>">
-                            <span class="material-icons md-36">business</span>
+                            <?php echo tnb_icon($type_icon); ?>
                             <span>
                                 <?= isset($type) && !is_wp_error($type) && is_object($type) ? $type->name : __('Propiedad', 'tnb')  ?>
                             </span>

@@ -46,8 +46,6 @@ $(function(){
         el = ($(this).attr('data-target'));
         $(el).addClass('is-active');
 
-        console.log(el);
-
         if(el == '#modal-lightbox'){
             init_map('gmap_lightbox');
         }

@@ -9,10 +9,14 @@ function renderMap($lat, $lon){
     }
 
     if(isset($lat) && isset($lon)):
+        $has_coords = ('' !== trim((string) $lat) && is_numeric($lat)
+            && '' !== trim((string) $lon) && is_numeric($lon));
+        $js_lat = $has_coords ? (float) $lat : 'null';
+        $js_lon = $has_coords ? (float) $lon : 'null';
         ?>
         <script type="text/javascript">
-            const lat = <?php echo $lat; ?>;
-            const lon = <?php echo $lon; ?>;
+            const lat = <?php echo $js_lat; ?>;
+            const lon = <?php echo $js_lon; ?>;
             //console.log(lat);
             //console.log(lon);
         </script>

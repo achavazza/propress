@@ -1,0 +1,29 @@
+.tnb-icon {
+	width: 1em;
+	height: 1em;
+	vertical-align: -0.125em;
+	display: inline-block;
+	stroke-width: 2;
+	flex: none;
+}
+
+.tnb-icon--md {
+	width: 1.5em;
+	height: 1.5em;
+}
+
+.tnb-icon--lg {
+	width: 2em;
+	height: 2em;
+}
+
+.prop-icon-type .tnb-icon,
+.prop-icon-type svg.tnb-icon {
+	width: 36px;
+	height: 36px;
+}
+
+.icon-text .tnb-icon {
+	width: 1.15em;
+	height: 1.15em;
+}

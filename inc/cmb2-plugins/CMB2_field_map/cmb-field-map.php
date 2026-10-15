@@ -110,12 +110,16 @@ class PW_CMB2_Field_Google_Maps {
 			return;
 		}
 
-		wp_register_script( 'pw-google-maps-api', '//maps.googleapis.com/maps/api/js?libraries=places&amp;key='.GMAPS_KEY, null, null );
+		wp_register_script( 'pw-google-maps-api', 'https://maps.googleapis.com/maps/api/js?libraries=places,marker&loading=async&key='.GMAPS_KEY, null, null );
 		//wp_enqueue_script( 'pw_gallery_init', PW_GALLERY_URL . '/js/script.js', array( 'jquery' ), null );
 		//wp_enqueue_style ( 'pw_gallery_init', PW_GALLERY_URL . '/css/style.css');
 
 		wp_enqueue_script( 'pw-google-maps', CMB2_FIELDMAP_URL . 'js/script.js'  , array( 'pw-google-maps-api' ), self::VERSION );
 		wp_enqueue_style( 'pw-google-maps',  CMB2_FIELDMAP_URL . 'css/style.css' , array(), self::VERSION );
+
+		wp_localize_script( 'pw-google-maps', 'tnbMaps', array(
+			'mapId' => ( defined('TNB_GMAPS_MAP_ID') ? TNB_GMAPS_MAP_ID : 'DEMO_MAP_ID' ),
+		) );
 	}
 }
 $pw_cmb2_field_google_maps = new PW_CMB2_Field_Google_Maps();

@@ -39,6 +39,11 @@ $prop_loc        = get_location($post);
 $status_terms    = get_the_terms($post->ID, 'status');
 $statuses        = $status_terms && !is_wp_error($status_terms) && isset($status_terms[0]) ? $status_terms[0] : null;
 
+$type_icon       = $type ? tnb_get_term_icon($type->term_id) : '';
+if (!$type_icon) {
+    $type_icon = 'building-2';
+}
+
 //var_dump($prop_sale);
 
 ?>
@@ -95,10 +100,10 @@ $statuses        = $status_terms && !is_wp_error($status_terms) && isset($status
                                 ?>
                             </a>
                             </div>
-                            <?php if(isset($type)): ?>
+                            <?php if(isset($type) && $type): ?>
                                 <div class="media-right">
                                     <a class="prop-icon-type" href="<?= isset($type) ? get_term_link($type) : home_url().'/?s='; ?>" title="<?php echo __('Tipo de propiedad') ?>">
-                                        <span class="material-icons md-36" <?= isset($type) ? $type->name : __('Propiedad', 'tnb'); ?>>business</span>
+                                        <?php echo tnb_icon($type_icon); ?>
                                         <span>
                                             <?= $type->name  ?>
                                         </span>
@@ -117,8 +122,8 @@ $statuses        = $status_terms && !is_wp_error($status_terms) && isset($status
                                         ?>
                                         <li class="level-item">
                                             <span class="icon-text">
-                                                <span class="icon material-icons icon-small" title="<?php echo ($dorms == 1) ? "$dorms Dormitorio" : "$dorms Dormitorios"; ?>">
-                                                    hotel
+                                                <span class="icon" title="<?php echo ($dorms == 1) ? "$dorms Dormitorio" : "$dorms Dormitorios"; ?>">
+                                                    <?php echo tnb_icon('bed'); ?>
                                                 </span>
                                                 <span><?php echo sprintf("%d", $dorms); ?></span>
                                             </span>
@@ -130,8 +135,8 @@ $statuses        = $status_terms && !is_wp_error($status_terms) && isset($status
                                         ?>
                                         <li class="level-item">
                                             <span class="icon-text">
-                                                <span class="icon material-icons icon-small" title="<?php echo ($baths == 1) ? "$baths Baño" : "$baths Baños";?>">
-                                                    bathtub
+                                                <span class="icon" title="<?php echo ($baths == 1) ? "$baths Baño" : "$baths Baños";?>">
+                                                    <?php echo tnb_icon('toilet'); ?>
                                                 </span>
                                                 <span><?= sprintf("%d", $baths);?></span>
                                             </span>

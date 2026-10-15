@@ -1,17 +1,12 @@
 function initMap() {
+    var mapId = (window.tnbMaps && tnbMaps.mapId) ? tnbMaps.mapId : 'DEMO_MAP_ID';
     var map = new google.maps.Map(document.getElementById('gmap_canvas'), {
         //mapTypeId: google.maps.MapTypeId.ROADMAP,
         zoom: 14,
+        mapId: mapId,
         //center: {lat: -25.363, lng: 131.044},
-        styles: [{
-          featureType: 'poi',
-          stylers: [{ visibility: 'off' }]
-        }]
-        /*styles = [{
-                featureType: "poi",
-                stylers: [{ visibility: "off" }]
-            }];*/
-
+        // NOTE: the legacy `styles` array cannot be combined with a mapId.
+        // Map styling is now configured via cloud-based styling on the Map ID.
     });
 
     var bounds     = new google.maps.LatLngBounds();
@@ -45,19 +40,21 @@ function initMap() {
     var marker, i;
     for (i = 0; i < locations.length; i++) {
         //console.log(locations[i]);
-        marker = new google.maps.Marker({
+        marker = new google.maps.marker.AdvancedMarkerElement({
             position: new google.maps.LatLng(locations[i][0], locations[i][1]),
             map: map,
-            content: body[i]
+            gmpClickable: true
         });
+        marker.content = body[i];
         markers.push(marker);
         bounds.extend(marker.position);
-        google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        marker.addListener('gmp-click', (function(marker, i) {
             return function() {
-                //map.setCenter(marker.getPosition());
-                map.panTo(marker.getPosition());
+                //map.setCenter(marker.position);
+                map.panTo(marker.position);
+                infowindow.setPosition(marker.position);
                 infowindow.setContent(this.content);
-                infowindow.open(map, marker);
+                infowindow.open(map);
             }
         })(marker, i));
     }

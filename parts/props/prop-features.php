@@ -12,6 +12,12 @@ $prop_bathrooms    = isset($data['_prop_bathrooms'][0]) ? $data['_prop_bathrooms
 if (!isset($type)) {
     $type = null;
 }
+
+// Per-term Lucide icon (fallback to a generic property icon).
+$type_icon = isset($type) && !is_wp_error($type) ? tnb_get_term_icon($type->term_id) : '';
+if (!$type_icon) {
+    $type_icon = 'building-2';
+}
 ?>
 <div class="card block">
 <div class="card-content">
@@ -20,7 +26,7 @@ if (!isset($type)) {
             <?php if(!$type):?>
             <a class="icon-text" href="<?php echo home_url().'/?s=' ?>" title="<?php echo __('Tipo de propiedad') ?>">
                 <span class="block align-center">
-                    <i class="material-icons">business</i>
+                    <?php echo tnb_icon($type_icon); ?>
                 </span>
                 &nbsp;
                 <?php echo 'Propiedad' ?>
@@ -28,7 +34,7 @@ if (!isset($type)) {
             <?php else: ?>
             <a class="icon-text" href="<?php echo get_term_link($type); ?>" title="<?php echo __('Tipo de propiedad') ?>">
                 <span class="icon">
-                    <i class="material-icons">business</i>
+                    <?php echo tnb_icon($type_icon); ?>
                 </span>
                 <span>
                     <?php echo $type->name; ?>
@@ -40,7 +46,7 @@ if (!isset($type)) {
         <li>
             <span class="icon-text" title="<?php echo __('Dormitorios') ?>">
                 <span class="icon">
-                    <i class="material-icons">bed</i>
+                    <?php echo tnb_icon('bed'); ?>
                 </span>
                 <span>
                 <?php
@@ -58,7 +64,7 @@ if (!isset($type)) {
         <li>
             <span class="icon-text" title="<?php echo __('Baños') ?>">
                 <span class="icon">
-                    <i class="material-icons">bathtub</i>
+                    <?php echo tnb_icon('toilet'); ?>
                     <!-- <i class="icon cofasa-linear icon-l icon-bath"></i> -->
                 </span>
                 <span>
